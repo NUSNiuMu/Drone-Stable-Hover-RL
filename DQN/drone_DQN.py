@@ -296,7 +296,7 @@ class DQN(nn.Module):
     输出值在[-1,1]范围内，然后映射到转速范围
     
     参数:
-        state_dim: 状态空间维度，默认为9，包含位置、速度、姿态等信息
+        state_dim: 状态空间维度，默认为9 [x,y,z,vx,vy,vz,roll,pitch,yaw]（旧版 DQN 环境，与 PPO 的 18 维不同；统一对比见 hover_rl/）
         action_dim: 动作空间维度，默认为4，对应四个电机的RPM值
     """
     def __init__(self, state_dim=9, action_dim=4):

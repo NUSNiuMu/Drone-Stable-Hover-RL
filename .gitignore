@@ -63,3 +63,6 @@ training_logs/
 !README.md
 !*.py
 !*.md
+
+# Re-run outputs: keep curves/configs/results, drop verbose Isaac logs
+runs/logs/

@@ -1,0 +1,723 @@
+{
+  "protocol": {
+    "num_envs": 512,
+    "eval_seed": 1000,
+    "episode_s": 12.0,
+    "gust_time_s": 6.0,
+    "gust_N": 0.1,
+    "gust_duration_s": 0.5,
+    "tol_m": 0.1,
+    "recovery_tol_m": 0.05,
+    "hold_s": 0.5,
+    "train_wind_N": [
+      0.02,
+      0.08
+    ],
+    "robot_weight_N": 0.2766420352512906,
+    "sweep_N": [
+      0.0,
+      0.02,
+      0.04,
+      0.06,
+      0.08,
+      0.1,
+      0.12,
+      0.14
+    ]
+  },
+  "models": {
+    "dqn_s0": {
+      "algo": "dqn",
+      "main": {
+        "pos_err_m": 0.007251820061355829,
+        "recovery_s": 0.62734375,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.08367080289463047,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.008410879410803318,
+          "recovery_s": 0.54296875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07388294860720634,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.0070037818513810635,
+          "recovery_s": 0.5520312500000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.0727557292120764,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.005021458026021719,
+          "recovery_s": 0.5643750000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.0756611853139475,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.00733326468616724,
+          "recovery_s": 0.6407421875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.0872728948306758,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.013299672864377499,
+          "recovery_s": 0.741640625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.1016072302518296,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.0241481214761734,
+          "recovery_s": 1.1311591355599213,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.14656735029371643,
+          "success_rate": 0.994140625,
+          "crash_rate": 0.005859375
+        },
+        "0.12": {
+          "pos_err_m": 0.06187187507748604,
+          "recovery_s": 2.04747572815534,
+          "recovered_rate": 0.8046875,
+          "gust_peak_err_m": 0.21593026904156432,
+          "success_rate": 0.837890625,
+          "crash_rate": 0.125
+        },
+        "0.14": {
+          "pos_err_m": 0.1773456633090973,
+          "recovery_s": 1.9303703703703705,
+          "recovered_rate": 0.10546875,
+          "gust_peak_err_m": 0.3201933822363888,
+          "success_rate": 0.109375,
+          "crash_rate": 0.57421875
+        }
+      }
+    },
+    "dqn_s1": {
+      "algo": "dqn",
+      "main": {
+        "pos_err_m": 0.006748131010681391,
+        "recovery_s": 0.6266406250000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.08346723706199555,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.007984589785337448,
+          "recovery_s": 0.5132812499999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07072402476478601,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.005829864181578159,
+          "recovery_s": 0.54015625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06948573447880335,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.0035805017687380314,
+          "recovery_s": 0.5455078125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07268329172075028,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.007452165242284536,
+          "recovery_s": 0.6246484375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08652479507145472,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.013376915827393532,
+          "recovery_s": 0.7569140624999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10320338653036742,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.022506272420287132,
+          "recovery_s": 1.1985546875000002,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.1505478740655235,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.12": {
+          "pos_err_m": 0.0663091242313385,
+          "recovery_s": 1.9357211538461538,
+          "recovered_rate": 0.8125,
+          "gust_peak_err_m": 0.20807028979262604,
+          "success_rate": 0.84375,
+          "crash_rate": 0.125
+        },
+        "0.14": {
+          "pos_err_m": 0.2273665815591812,
+          "recovery_s": 2.127397260273973,
+          "recovered_rate": 0.142578125,
+          "gust_peak_err_m": 0.338388151532792,
+          "success_rate": 0.134765625,
+          "crash_rate": 0.541015625
+        }
+      }
+    },
+    "dqn_s2": {
+      "algo": "dqn",
+      "main": {
+        "pos_err_m": 0.009957964532077312,
+        "recovery_s": 0.6377343750000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.08616860290203476,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.011754794046282768,
+          "recovery_s": 0.5394921875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07308049261337146,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.010285197757184505,
+          "recovery_s": 0.5526171875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07226123203872703,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.008053692989051342,
+          "recovery_s": 0.556484375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07581785367801785,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.009458106011152267,
+          "recovery_s": 0.651328125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09066311789501924,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.015333494171500206,
+          "recovery_s": 0.7825390624999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10667137498603552,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.02790607325732708,
+          "recovery_s": 1.2105304518664046,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.14808424514643337,
+          "success_rate": 0.994140625,
+          "crash_rate": 0.005859375
+        },
+        "0.12": {
+          "pos_err_m": 0.07845275104045868,
+          "recovery_s": 2.2759885386819487,
+          "recovered_rate": 0.681640625,
+          "gust_peak_err_m": 0.2333136090350619,
+          "success_rate": 0.732421875,
+          "crash_rate": 0.154296875
+        },
+        "0.14": {
+          "pos_err_m": 0.2273227721452713,
+          "recovery_s": 2.0816000000000003,
+          "recovered_rate": 0.048828125,
+          "gust_peak_err_m": 0.3732537561899995,
+          "success_rate": 0.06640625,
+          "crash_rate": 0.572265625
+        }
+      }
+    },
+    "ppo_s0": {
+      "algo": "ppo",
+      "main": {
+        "pos_err_m": 0.014678466133773327,
+        "recovery_s": 0.5005479452054794,
+        "recovered_rate": 0.998046875,
+        "gust_peak_err_m": 0.06743584081180641,
+        "success_rate": 0.998046875,
+        "crash_rate": 0.001953125
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.020928408950567245,
+          "recovery_s": 0.5535686274509803,
+          "recovered_rate": 0.99609375,
+          "gust_peak_err_m": 0.06480490200075449,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.00390625
+        },
+        "0.02": {
+          "pos_err_m": 0.01954694464802742,
+          "recovery_s": 0.5129941291585127,
+          "recovered_rate": 0.998046875,
+          "gust_peak_err_m": 0.06413893727494546,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.04": {
+          "pos_err_m": 0.016060486435890198,
+          "recovery_s": 0.4603515625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06399386478005908,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.012154826894402504,
+          "recovery_s": 0.4865753424657534,
+          "recovered_rate": 0.998046875,
+          "gust_peak_err_m": 0.06770111001488514,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.08": {
+          "pos_err_m": 0.013675715774297714,
+          "recovery_s": 0.6544814090019571,
+          "recovered_rate": 0.998046875,
+          "gust_peak_err_m": 0.08206101864168089,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.1": {
+          "pos_err_m": 0.02484981156885624,
+          "recovery_s": 0.9408678500986193,
+          "recovered_rate": 0.990234375,
+          "gust_peak_err_m": 0.10964098713807101,
+          "success_rate": 0.990234375,
+          "crash_rate": 0.009765625
+        },
+        "0.12": {
+          "pos_err_m": 0.04691125452518463,
+          "recovery_s": 1.622863436123348,
+          "recovered_rate": 0.88671875,
+          "gust_peak_err_m": 0.1719476650347528,
+          "success_rate": 0.890625,
+          "crash_rate": 0.1015625
+        },
+        "0.14": {
+          "pos_err_m": 0.12486310303211212,
+          "recovery_s": 1.902018348623853,
+          "recovered_rate": 0.42578125,
+          "gust_peak_err_m": 0.19603275798510442,
+          "success_rate": 0.5,
+          "crash_rate": 0.474609375
+        }
+      }
+    },
+    "ppo_s1": {
+      "algo": "ppo",
+      "main": {
+        "pos_err_m": 0.00959980022162199,
+        "recovery_s": 0.5256640625,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07349648845411139,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.01067592203617096,
+          "recovery_s": 0.3590234375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.0571306180281681,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.01038957480341196,
+          "recovery_s": 0.4212890625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.05861579690827057,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.009635161608457565,
+          "recovery_s": 0.4555078125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06374627391778631,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.008920451626181602,
+          "recovery_s": 0.5299218750000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07773155137692811,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.010597433894872665,
+          "recovery_s": 0.6361328125000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.095233996908064,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.018473343923687935,
+          "recovery_s": 0.8940667976424362,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.13484545403355933,
+          "success_rate": 0.994140625,
+          "crash_rate": 0.005859375
+        },
+        "0.12": {
+          "pos_err_m": 0.04044841229915619,
+          "recovery_s": 1.4683575883575883,
+          "recovered_rate": 0.939453125,
+          "gust_peak_err_m": 0.22378929364259798,
+          "success_rate": 0.93359375,
+          "crash_rate": 0.033203125
+        },
+        "0.14": {
+          "pos_err_m": 0.1731593906879425,
+          "recovery_s": 2.0067175572519083,
+          "recovered_rate": 0.51171875,
+          "gust_peak_err_m": 0.33468721480357333,
+          "success_rate": 0.513671875,
+          "crash_rate": 0.333984375
+        }
+      }
+    },
+    "ppo_s2": {
+      "algo": "ppo",
+      "main": {
+        "pos_err_m": 0.009620999917387962,
+        "recovery_s": 0.5966994106090374,
+        "recovered_rate": 0.994140625,
+        "gust_peak_err_m": 0.07206865392025187,
+        "success_rate": 0.994140625,
+        "crash_rate": 0.005859375
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.011646217666566372,
+          "recovery_s": 0.61015625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06600326184707228,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.011499114334583282,
+          "recovery_s": 0.5967187500000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06527272704988718,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.010579059831798077,
+          "recovery_s": 0.5318359375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06632125969917979,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.00907385628670454,
+          "recovery_s": 0.601921568627451,
+          "recovered_rate": 0.99609375,
+          "gust_peak_err_m": 0.07472240553767073,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.00390625
+        },
+        "0.08": {
+          "pos_err_m": 0.008360029198229313,
+          "recovery_s": 0.7758742632612967,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.0939351716728365,
+          "success_rate": 0.994140625,
+          "crash_rate": 0.005859375
+        },
+        "0.1": {
+          "pos_err_m": 0.013890977948904037,
+          "recovery_s": 1.0183762376237624,
+          "recovered_rate": 0.986328125,
+          "gust_peak_err_m": 0.1280101823408415,
+          "success_rate": 0.986328125,
+          "crash_rate": 0.013671875
+        },
+        "0.12": {
+          "pos_err_m": 0.03513547405600548,
+          "recovery_s": 1.3915,
+          "recovered_rate": 0.859375,
+          "gust_peak_err_m": 0.19497646895999257,
+          "success_rate": 0.859375,
+          "crash_rate": 0.140625
+        },
+        "0.14": {
+          "pos_err_m": 0.09638044983148575,
+          "recovery_s": 2.0345454545454547,
+          "recovered_rate": 0.451171875,
+          "gust_peak_err_m": 0.2874119960732998,
+          "success_rate": 0.451171875,
+          "crash_rate": 0.515625
+        }
+      }
+    },
+    "td3_s0": {
+      "algo": "td3",
+      "main": {
+        "pos_err_m": 0.02179342322051525,
+        "recovery_s": 0.6195312500000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07669150111905765,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.0032325414940714836,
+          "recovery_s": 0.5076171875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.061403515755955596,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.00892550777643919,
+          "recovery_s": 0.47453125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06204269777663285,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.017308272421360016,
+          "recovery_s": 0.506875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06662759623577585,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.025847963988780975,
+          "recovery_s": 0.6696875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08290449722699123,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.03481049835681915,
+          "recovery_s": 0.8694921875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09702254504372831,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.04928754270076752,
+          "recovery_s": 2.0125,
+          "recovered_rate": 0.953125,
+          "gust_peak_err_m": 0.14878251302434364,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.12": {
+          "pos_err_m": 0.07252153754234314,
+          "recovery_s": 1.944923076923077,
+          "recovered_rate": 0.380859375,
+          "gust_peak_err_m": 0.21643194400014415,
+          "success_rate": 0.8671875,
+          "crash_rate": 0.091796875
+        },
+        "0.14": {
+          "pos_err_m": 0.12106144428253174,
+          "recovery_s": 0.12482758620689656,
+          "recovered_rate": 0.056640625,
+          "gust_peak_err_m": 0.23923294799612577,
+          "success_rate": 0.54296875,
+          "crash_rate": 0.255859375
+        }
+      }
+    },
+    "td3_s1": {
+      "algo": "td3",
+      "main": {
+        "pos_err_m": 0.016548920422792435,
+        "recovery_s": 0.5669921875,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07157518806343433,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.00986576545983553,
+          "recovery_s": 0.539375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.0665471744214301,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.008794780820608139,
+          "recovery_s": 0.5551953125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06558855792536633,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.013291625306010246,
+          "recovery_s": 0.48449218750000006,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06507141029578634,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.018848752602934837,
+          "recovery_s": 0.5550781250000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07162267625244567,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.02697160094976425,
+          "recovery_s": 0.6988671875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08650325181224616,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.04486249014735222,
+          "recovery_s": 1.0769684210526318,
+          "recovered_rate": 0.927734375,
+          "gust_peak_err_m": 0.13136445520818232,
+          "success_rate": 0.974609375,
+          "crash_rate": 0.0234375
+        },
+        "0.12": {
+          "pos_err_m": 0.06527580320835114,
+          "recovery_s": 1.407741935483871,
+          "recovered_rate": 0.544921875,
+          "gust_peak_err_m": 0.1625781725792364,
+          "success_rate": 0.84765625,
+          "crash_rate": 0.150390625
+        },
+        "0.14": {
+          "pos_err_m": 0.08856695890426636,
+          "recovery_s": 0.635,
+          "recovered_rate": 0.125,
+          "gust_peak_err_m": 0.2005256248541199,
+          "success_rate": 0.62109375,
+          "crash_rate": 0.361328125
+        }
+      }
+    },
+    "td3_s2": {
+      "algo": "td3",
+      "main": {
+        "pos_err_m": 0.01690927892923355,
+        "recovery_s": 0.6747265625000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07641180339123821,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.016702715307474136,
+          "recovery_s": 0.541875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06561970279290108,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.02": {
+          "pos_err_m": 0.018952444195747375,
+          "recovery_s": 0.5106250000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06528374874324072,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.04": {
+          "pos_err_m": 0.014542993158102036,
+          "recovery_s": 0.5480078125000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.06583629334636498,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.06": {
+          "pos_err_m": 0.015830006450414658,
+          "recovery_s": 0.685859375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.0787192005009274,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.08": {
+          "pos_err_m": 0.022673264145851135,
+          "recovery_s": 0.9658317025440315,
+          "recovered_rate": 0.998046875,
+          "gust_peak_err_m": 0.10455007295610853,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.1": {
+          "pos_err_m": 0.043831758201122284,
+          "recovery_s": 1.8925274725274726,
+          "recovered_rate": 0.888671875,
+          "gust_peak_err_m": 0.15901497382746668,
+          "success_rate": 0.931640625,
+          "crash_rate": 0.04296875
+        },
+        "0.12": {
+          "pos_err_m": 0.07824170589447021,
+          "recovery_s": 2.2466976744186047,
+          "recovered_rate": 0.419921875,
+          "gust_peak_err_m": 0.21617905850566568,
+          "success_rate": 0.677734375,
+          "crash_rate": 0.1796875
+        },
+        "0.14": {
+          "pos_err_m": 0.16797952353954315,
+          "recovery_s": 0.42,
+          "recovered_rate": 0.056640625,
+          "gust_peak_err_m": 0.22882462147460042,
+          "success_rate": 0.12109375,
+          "crash_rate": 0.509765625
+        }
+      }
+    }
+  }
+}

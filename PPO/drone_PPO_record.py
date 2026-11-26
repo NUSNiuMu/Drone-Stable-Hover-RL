@@ -759,7 +759,10 @@ def train_ppo(max_episodes=1000, enable_gui=False, enable_wind=False):
             if enable_wind and episode >= start_wind_recording_episode:
                 wind_test_data['wind_speeds'].append(env.wind_strength)
                 wind_test_data['position_errors'].append(np.linalg.norm(position_error))
-                wind_test_data['recovery_times'].append(episode_steps * env.dt)
+                # NOTE (2026-11 fix): this value is the *episode duration*, not a disturbance-recovery time.
+                # The old code used physics dt (0.01 s) although each control step runs 4 physics steps, and the
+                # 300-step episode cap truncated it at 3.0 s. Use control dt and keep the honest meaning.
+                wind_test_data['recovery_times'].append(episode_steps * env.dt * 4)
             
             # 记录平均奖励
             avg_rewards.append(episode_reward)

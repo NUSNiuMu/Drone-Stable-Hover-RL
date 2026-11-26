@@ -195,8 +195,8 @@ def plot_wind_adaptation(data, save_dir="outputs/plots"):
     # 位置误差图
     plt.subplot(1, 2, 1)
     plt.plot(data['wind_speeds'], data['wind_errors'], 'o-')
-    plt.title('位置误差与风速关系')
-    plt.xlabel('风速 (Wind Speed, m/s)')
+    plt.title('位置误差与风力关系')
+    plt.xlabel('风力 (Wind Force, N)')
     plt.ylabel('平均位置误差 (Average Position Error, m)')
     plt.grid(True)
     plt.text(0.02, 0.98, '表示在不同风速下\n的定位精度变化', 
@@ -207,9 +207,9 @@ def plot_wind_adaptation(data, save_dir="outputs/plots"):
     # 恢复时间图
     plt.subplot(1, 2, 2)
     plt.plot(data['wind_speeds'], data['recovery_times'], 'o-')
-    plt.title('恢复时间与风速关系')
-    plt.xlabel('风速 (Wind Speed, m/s)')
-    plt.ylabel('恢复时间 (Recovery Time, s)')
+    plt.title('回合时长与风力关系')
+    plt.xlabel('风力 (Wind Force, N)')
+    plt.ylabel('回合时长 (Episode Duration, s; legacy "recovery time")')
     plt.grid(True)
     plt.text(0.02, 0.98, '表示从扰动恢复到\n稳定状态所需时间', 
              transform=plt.gca().transAxes, 

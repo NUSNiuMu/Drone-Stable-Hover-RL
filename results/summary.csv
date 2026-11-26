@@ -1,0 +1,4 @@
+algo,seeds,pos_err_mean,pos_err_std,gust_peak_mean,gust_peak_std,recovery_mean,recovery_std,recovered_mean,success_mean,success_std,crash_mean
+ppo,3,0.0113,0.0024,0.0710,0.0026,0.5410,0.0407,0.9974,0.9974,0.0024,0.0026
+td3,3,0.0184,0.0024,0.0749,0.0023,0.6204,0.0440,1.0000,1.0000,0.0000,0.0000
+dqn,3,0.0080,0.0014,0.0844,0.0012,0.6306,0.0051,1.0000,1.0000,0.0000,0.0000

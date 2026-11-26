@@ -1,0 +1,15 @@
+{
+  "algo": "ppo",
+  "seed": 0,
+  "num_envs": 1024,
+  "env_steps": 50000000,
+  "robot_mass_kg": 0.028200002387166023,
+  "robot_weight_N": 0.2766420352512906,
+  "k_f": 2.5226728611197487e-07,
+  "step_dt": 0.02,
+  "episode_length_s": 10.0,
+  "wind_N": [
+    0.02,
+    0.08
+  ]
+}
