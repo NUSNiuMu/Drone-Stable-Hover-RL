@@ -197,15 +197,22 @@ class TD3:
 
     def __init__(self, obs_dim, act_dim, num_envs, device, *, lr=3e-4, gamma=0.99, tau=0.005, batch=4096,
                  capacity=2_000_000, grad_steps=8, policy_delay=2, expl_noise=0.2, target_noise=0.2,
-                 noise_clip=0.5, warmup_steps=50):
+                 noise_clip=0.5, warmup_steps=50, n_step=1, reward_scale=1.0, hidden=(256, 256)):
+        # Defaults = the v1 hyper-parameters. n_step / reward_scale / hidden were added for the v2 re-tuning; with the
+        # defaults the update is identical to the original implementation.
         self.device, self.num_envs = device, num_envs
         self.norm = RunningNorm(obs_dim).to(device)
-        self.actor = mlp(obs_dim, act_dim, (256, 256), out_act=nn.Tanh).to(device)
-        self.q1, self.q2 = mlp(obs_dim + act_dim, 1).to(device), mlp(obs_dim + act_dim, 1).to(device)
+        hidden = tuple(hidden)
+        self.actor = mlp(obs_dim, act_dim, hidden, out_act=nn.Tanh).to(device)
+        self.q1, self.q2 = mlp(obs_dim + act_dim, 1, hidden).to(device), mlp(obs_dim + act_dim, 1, hidden).to(device)
         self.actor_t, self.q1_t, self.q2_t = map(copy.deepcopy, (self.actor, self.q1, self.q2))
         self.opt_a = torch.optim.Adam(self.actor.parameters(), lr=lr)
         self.opt_q = torch.optim.Adam([*self.q1.parameters(), *self.q2.parameters()], lr=lr)
         self.rb = Replay(obs_dim, act_dim, capacity, device)
+        self.n_step, self.reward_scale = n_step, reward_scale
+        if n_step > 1:
+            self.rb.g = torch.zeros(capacity, device=device)  # per-transition bootstrap discount gamma^k
+            self.window = []
         self.gamma, self.tau, self.batch, self.grad_steps = gamma, tau, batch, grad_steps
         self.policy_delay, self.expl_noise, self.target_noise, self.noise_clip = policy_delay, expl_noise, target_noise, noise_clip
         self.warmup_steps, self.vec_steps, self.n_updates = warmup_steps, 0, 0
@@ -223,28 +230,59 @@ class TD3:
         self._cache = (obs, a)
         return a
 
+    @torch.no_grad()
+    def _push_oldest(self):
+        o0, a0 = self.window[0][0], self.window[0][1]
+        n = o0.shape[0]
+        R = torch.zeros(n, device=self.device)
+        alive = torch.ones(n, dtype=torch.bool, device=self.device)
+        nxt, done, g = self.window[0][5], self.window[0][3].float(), torch.full((n,), self.gamma, device=self.device)
+        disc = 1.0
+        for k, (_, _, r, term, ended, o2) in enumerate(self.window):
+            R = R + alive.float() * disc * r
+            nxt = torch.where(alive.unsqueeze(-1), o2, nxt)
+            done = torch.where(alive, term.float(), done)
+            g = torch.where(alive, torch.full_like(g, self.gamma ** (k + 1)), g)
+            disc *= self.gamma
+            alive = alive & ~ended
+        ptr = self.rb.ptr
+        self.rb.add(o0, a0, R, nxt, done)
+        idx = (torch.arange(n, device=self.device) + ptr) % self.rb.cap
+        self.rb.g[idx] = g
+        self.window.pop(0)
+
     def observe(self, obs, rew, terminated, truncated, terminal_obs):
         o, a = self._cache
         # next observation for transitions that ended is the pre-reset observation
         ended = (terminated | truncated).unsqueeze(-1)
         o2 = torch.where(ended, terminal_obs, obs)
-        self.rb.add(o, a, rew, o2, terminated.float())
+        if self.n_step > 1:
+            self.window.append((o, a, rew * self.reward_scale, terminated, ended.squeeze(-1), o2))
+            if len(self.window) == self.n_step:
+                self._push_oldest()
+        else:
+            self.rb.add(o, a, rew * self.reward_scale if self.reward_scale != 1.0 else rew, o2, terminated.float())
         self.norm.update(o)
         self.vec_steps += 1
-        if self.vec_steps < self.warmup_steps:
+        if self.vec_steps < self.warmup_steps or self.rb.size == 0:
             return None
         return self._update()
 
     def _update(self):
         ql, al = 0.0, 0.0
         for _ in range(self.grad_steps):
-            o, a, r, o2, d = self.rb.sample(self.batch)
+            if self.n_step > 1:
+                i = torch.randint(0, self.rb.size, (self.batch,), device=self.device)
+                o, a, r, o2, d, g = self.rb.o[i], self.rb.a[i], self.rb.r[i], self.rb.o2[i], self.rb.d[i], self.rb.g[i]
+            else:
+                o, a, r, o2, d = self.rb.sample(self.batch)
+                g = self.gamma
             no, no2 = self.norm(o), self.norm(o2)
             with torch.no_grad():
                 noise = (self.target_noise * torch.randn_like(a)).clamp(-self.noise_clip, self.noise_clip)
                 a2 = (self.actor_t(no2) + noise).clamp(-1, 1)
                 x2 = torch.cat([no2, a2], -1)
-                y = r + self.gamma * (1 - d) * torch.min(self.q1_t(x2), self.q2_t(x2)).squeeze(-1)
+                y = r + g * (1 - d) * torch.min(self.q1_t(x2), self.q2_t(x2)).squeeze(-1)
             x = torch.cat([no, a], -1)
             loss_q = F.mse_loss(self.q1(x).squeeze(-1), y) + F.mse_loss(self.q2(x).squeeze(-1), y)
             self.opt_q.zero_grad()

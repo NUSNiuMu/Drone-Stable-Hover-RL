@@ -20,6 +20,7 @@ Student    : RMA phase-2 policy = frozen teacher actor + adaptation module that 
 from __future__ import annotations
 
 import json
+import os
 import math
 
 import torch
@@ -304,6 +305,9 @@ def load_controller(kind: str, path: str, env, obs_dim: int):
     if kind == "student":
         return Student.load(path, env.num_envs, env.device)
     kw = {"capacity": 1} if kind in ("td3", "dqn") else {}  # no replay buffer needed for evaluation
+    cfg_path = os.path.join(os.path.dirname(path), "config.json")
+    if os.path.exists(cfg_path) and "hidden" in json.load(open(cfg_path)).get("hp", {}):
+        kw["hidden"] = json.load(open(cfg_path))["hp"]["hidden"]
     agent = ALGOS[kind](obs_dim, 4, env.num_envs, env.device, **kw)
     agent.load_state_dict(torch.load(path, map_location=env.device))
     agent.norm.frozen = True

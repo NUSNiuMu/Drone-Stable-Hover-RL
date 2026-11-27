@@ -17,23 +17,23 @@ import numpy as np  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 RES, FIG, RUNS = (os.path.join(ROOT, d) for d in ("results_v2", "figures", "runs_v2"))
-ORDER = ["pid_ctbr", "pid_motor", "lqr_motor", "lqi_motor", "ppo_motor", "ppo_ctbr", "td3_ctbr", "student_ctbr",
-         "teacher_ctbr"]
+ORDER = ["pid_ctbr", "pid_motor", "lqr_motor", "lqi_motor", "ppo_motor", "ppo_ctbr", "td3_ctbr", "td3t_ctbr",
+         "student_ctbr", "teacher_ctbr"]
 LABEL = {"pid_ctbr": "Cascaded PID (CTBR, onboard rate loop)", "pid_motor": "Cascaded PID (motor commands)",
          "lqr_motor": "LQR (motor commands)", "lqi_motor": "LQI (motor commands)", "ppo_motor": "PPO, motor commands", "ppo_ctbr": "PPO, CTBR",
-         "td3_ctbr": "TD3, CTBR", "student_ctbr": "RMA student (CTBR, estimates wind)",
+         "td3_ctbr": "TD3 (v1 hparams), CTBR", "td3t_ctbr": "TD3 (tuned), CTBR", "student_ctbr": "RMA student (CTBR, estimates wind)",
          "teacher_ctbr": "RMA teacher (sees true wind; upper bound)"}
-SHORT = {"pid_ctbr": "PID-CTBR", "pid_motor": "PID-motor", "lqr_motor": "LQR", "lqi_motor": "LQI", "ppo_motor": "PPO-motor", "ppo_ctbr": "PPO-CTBR", "td3_ctbr": "TD3-CTBR",
+SHORT = {"pid_ctbr": "PID-CTBR", "pid_motor": "PID-motor", "lqr_motor": "LQR", "lqi_motor": "LQI", "ppo_motor": "PPO-motor", "ppo_ctbr": "PPO-CTBR", "td3_ctbr": "TD3 (v1 hparams)", "td3t_ctbr": "TD3 (tuned)",
          "student_ctbr": "RMA student", "teacher_ctbr": "Teacher (privileged)"}
 # Only the first three categorical slots (blue, orange, aqua) pass the ALL-pairs CVD check, so the line charts use
 # exactly those three hues for the learned controllers and neutral inks for the two references: PID (dark ink) and the
 # privileged teacher (light ink, dotted, upper bound). TD3 is reported in the tables only.
 COLOR = {"ppo_ctbr": "#2a78d6", "ppo_motor": "#eb6834", "student_ctbr": "#1baf7a", "pid_ctbr": "#52514e",
-         "teacher_ctbr": "#9a9993", "td3_ctbr": "#52514e", "pid_motor": "#52514e", "lqr_motor": "#52514e",
+         "teacher_ctbr": "#9a9993", "td3_ctbr": "#52514e", "td3t_ctbr": "#52514e", "pid_motor": "#52514e", "lqr_motor": "#52514e",
          "lqi_motor": "#52514e"}
-MARK = {"ppo_ctbr": "o", "ppo_motor": "s", "student_ctbr": "^", "teacher_ctbr": "v", "pid_ctbr": "D", "td3_ctbr": "P",
+MARK = {"ppo_ctbr": "o", "ppo_motor": "s", "student_ctbr": "^", "teacher_ctbr": "v", "pid_ctbr": "D", "td3_ctbr": "P", "td3t_ctbr": "X",
         "pid_motor": "D", "lqr_motor": "s", "lqi_motor": "v"}
-LS = {"ppo_ctbr": "-", "ppo_motor": "--", "student_ctbr": "-", "teacher_ctbr": ":", "pid_ctbr": "-.", "td3_ctbr": ":",
+LS = {"ppo_ctbr": "-", "ppo_motor": "--", "student_ctbr": "-", "teacher_ctbr": ":", "pid_ctbr": "-.", "td3_ctbr": ":", "td3t_ctbr": ":",
       "pid_motor": ":", "lqr_motor": "--", "lqi_motor": "-."}
 PLOT = ["pid_ctbr", "ppo_motor", "ppo_ctbr", "student_ctbr", "teacher_ctbr"]
 INK, INK2, GRID, BG = "#0b0b0b", "#52514e", "#e4e3df", "#fcfcfb"
@@ -114,7 +114,7 @@ def write_tables(prot, table):
                      "range " + ", ".join(f"{100 * float(s):.0f}%: {100 * table[a]['sweep'][s]['success_rate'][0]:.1f} vs "
                                           f"{100 * table[b]['sweep'][s]['success_rate'][0]:.1f}" for s in hi))
     for a, b in (("ppo_ctbr", "ppo_motor"), ("ppo_ctbr", "pid_ctbr"), ("student_ctbr", "ppo_ctbr"),
-                 ("student_ctbr", "pid_ctbr"), ("teacher_ctbr", "student_ctbr"), ("td3_ctbr", "ppo_ctbr"),
+                 ("student_ctbr", "pid_ctbr"), ("teacher_ctbr", "student_ctbr"), ("td3_ctbr", "ppo_ctbr"), ("td3t_ctbr", "ppo_ctbr"), ("td3t_ctbr", "td3_ctbr"),
                  ("lqr_motor", "pid_motor"), ("lqi_motor", "pid_motor"), ("lqi_motor", "lqr_motor"),
                  ("pid_ctbr", "pid_motor"), ("ppo_motor", "pid_motor"), ("ppo_motor", "lqi_motor")):
         cmp(a, b)

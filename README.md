@@ -33,8 +33,11 @@ Red arrow = wind force, green cube = target. Peak deviation during the gust: PID
   weight + gust, PID (motor output) still succeeds in 93 % of episodes, RMA 54 %, PPO-CTBR 12 %, PPO-motor 1 %. The
   learned policies were trained on 0–35 % wind and do not extrapolate the way an integrator does.
 - **Steady-state precision in the idealised v1 simulator:** PID (0.81 cm) and DQN (0.80 cm) beat PPO (1.13 cm).
-- **TD3 did not transfer to the realistic simulator** with the v1 hyper-parameters: no crashes, but a ~10 cm hover
-  offset, 54 % success in range and 0 % at ≥ 40 % wind (3 seeds × 100 M steps; it was not re-tuned).
+- **TD3 trails PPO in the realistic simulator.** With the default TD3 hyper-parameters it hovers with a ~10 cm static
+  offset (54 % success). A diagnosis + 10-config study traced this to weak 1-step critic gradients at 50 Hz; 3-step
+  returns, lower exploration noise and lr 1e-4 cut the offset to 4.4 cm and lift success to 99.9 %, but PPO-CTBR is still
+  better on every metric (2.15 cm / 10.6 cm peak / 1.09 s vs 4.39 cm / 13.0 cm / 1.95 s) and far more robust beyond range
+  (60 % wind: 84 % vs 15 % success).
 - RL needs 100 M simulated steps (~1 h on a GPU per seed); the PID is 8 numbers tuned in ~10 minutes.
 
 ## Methods at a glance
@@ -45,7 +48,7 @@ Red arrow = wind force, green cube = target. Peak deviation during the gust: PID
 | **LQR** | Linear–quadratic regulator | Hover linearisation (12-state small-angle model in the heading frame, nominal mass/inertia), ZOH-discretised at 50 Hz, discrete Riccati solution; position error clipped (anti-saturation) | same 12-D state → collective thrust + 3 torques → mixer → motors | Bryson's-rule maxima for Q/R (10 values) + error clip, CEM-tuned | Kalman 1960; Bryson & Ho 1975; Bouabdallah et al. 2004 (PID vs LQ on a micro quadrotor) |
 | **LQI** | LQR with integral action | LQR augmented with the integral of the position error (3 extra states), conditional integration as anti-wind-up | state + ∫position error → thrust + torques | as LQR + 2 integral maxima | standard servo/integral LQR (e.g. MATLAB `lqi`) |
 | **PPO** | Proximal Policy Optimization | On-policy actor-critic, clipped surrogate, GAE, adaptive LR on KL | observation (18-D v1 / 26-D v2) → 4 actions | 1024 envs × 32 steps, 5 epochs × 4 minibatches, clip 0.2, γ 0.99, λ 0.95, MLP 256-128-64 | Schulman et al. 2017 |
-| **TD3** | Twin Delayed DDPG | Off-policy deterministic actor, twin critics, target smoothing, delayed actor updates | same → 4 actions | 2 M replay, batch 4096, 8 updates/step, policy delay 2, τ 0.005, MLP 256-256 | Fujimoto et al. 2018 |
+| **TD3** | Twin Delayed DDPG | Off-policy deterministic actor, twin critics, target smoothing, delayed actor updates | same → 4 actions | 2 M replay, batch 4096, 8 updates/step, policy delay 2, τ 0.005, MLP 256-256; v1: lr 3e-4, noise 0.2, 1-step; v2: lr 1e-4, expl./target noise 0.1 (clip 0.25), 3-step returns | Fujimoto et al. 2018 |
 | **DQN** | Deep Q-Network (Double DQN, 3-step returns) | Discrete Q-learning over 3 levels per motor (81 joint actions) | same → 1 of 81 motor-level combinations | lr 1e-4, τ 0.001, 2 updates/step, ε 1→0.05 | Mnih et al. 2015; van Hasselt et al. 2016; Hessel et al. 2018 |
 | **CTBR action space** | Collective thrust + body rates | Policy outputs total thrust and 3 body-rate set-points; an onboard 100 Hz P rate loop + mixer (shared with the PID-CTBR) turns them into motor commands | observation → [T, ω_x, ω_y, ω_z] | rate gain 20 / 20 / 10 s⁻¹, max rate 4 / 4 / 2 rad/s | Kaufmann et al. 2022 (benchmark of learned quadrotor control interfaces) |
 | **RMA teacher–student** | Rapid Motor Adaptation | Teacher = PPO-CTBR that also sees privileged e = [wind force in body frame, mass, thrust coeff., motor τ, delay]; student = frozen teacher + adaptation module estimating ê from the last 1 s (50 steps) of observations and actions, trained by on-policy regression (DAgger-style) | 50 × 26-D history → ê (7-D) → teacher → 4 CTBR actions | MLP 1300-256-128-7, 30 M steps, MSE in normalised e space | Kumar et al. 2021 (RMA); related: O'Connell et al. 2022 (Neural-Fly) |
@@ -74,7 +77,8 @@ sensor noise (5 mm, 2 cm/s, 0.01 rad, 0.05 rad/s); base wind U[0, 35] % of the w
 | LQI (motor commands) | 2.27 ± 0.57 | 27.0 ± 0.3 | 1.76 ± 0.05 | 84.8 % | 14.4 % |
 | PPO, motor commands | 2.83 ± 0.54 | 11.6 ± 0.2 | 1.35 ± 0.06 | 99.5 % | 0.5 % |
 | PPO, CTBR | 2.15 ± 0.13 | 10.6 ± 0.3 | 1.09 ± 0.04 | 100.0 % | 0.0 % |
-| TD3, CTBR (v1 hyper-parameters) | 9.90 ± 1.40 | 19.7 ± 0.6 | 1.91 ± 0.21 ¹ | 54.4 % | 0.0 % |
+| TD3, CTBR (tuned, 3-step returns) | 4.39 ± 0.65 | 13.0 ± 0.5 | 1.95 ± 0.33 ² | 99.9 % | 0.0 % |
+| TD3, CTBR (default hyper-parameters) | 9.90 ± 1.40 | 19.7 ± 0.6 | 1.91 ± 0.21 ¹ | 54.4 % | 0.0 % |
 | **RMA student (CTBR, estimates wind online)** | **0.90 ± 0.05** | **9.2 ± 0.2** | **0.84 ± 0.06** | **100.0 %** | **0.0 %** |
 | RMA teacher (sees the true wind — upper bound) | 0.74 ± 0.06 | 7.7 ± 0.1 | 0.80 ± 0.03 | 100.0 % | 0.0 % |
 
@@ -88,12 +92,41 @@ Success with the steady wind fixed **beyond the training range** (same +40 % gus
 | LQI | 59.8 % | 28.8 % | 10.2 % | 0.3 % | 0.0 % |
 | PPO-motor | 97.7 % | 88.5 % | 56.0 % | 9.6 % | 0.8 % |
 | PPO-CTBR | 99.8 % | 98.8 % | 83.9 % | 45.0 % | 12.0 % |
-| TD3-CTBR | 0.0 % | 0.0 % | 0.0 % | 0.0 % | 0.0 % |
+| TD3-CTBR (tuned) | 98.4 % | 68.9 % | 14.9 % | 0.3 % | 0.0 % |
+| TD3-CTBR (default hp) | 0.0 % | 0.0 % | 0.0 % | 0.0 % | 0.0 % |
 | RMA student | 100.0 % | 99.9 % | 99.7 % | 89.9 % | 54.3 % |
 | RMA teacher | 100.0 % | 100.0 % | 100.0 % | 93.9 % | 70.2 % |
 
 ¹ only 16.5 % of TD3 episodes get back inside 5 cm at all; the mean is over those. TD3 does not crash in range,
 but it hovers with a ~10 cm offset (success 36–70 % per seed) and already fails at a steady 30 % wind (2–10 %).
+² 83.9 % of tuned-TD3 episodes recover inside 5 cm; its residual 4–5 cm offset sits close to the 5 cm recovery threshold,
+which is why its recovery time is long although its gust peak is only 23 % above PPO's.
+
+**TD3 diagnosis and hyper-parameter study** ([`results_v2/td3_tuning/`](results_v2/td3_tuning/),
+`hover_rl/td3_diag.py`). With the default hyper-parameters the error is a *static bias*, not jitter: 5.3 / 8.0 /
+12.0 cm mean offset at 0 / 15 / 30 % steady wind (PPO 0.9 / 1.3 / 2.1 cm), RMS jitter only 2–3 cm, mostly cross-wind and
+present even without wind. The critic is not systematically over-estimating (Q vs realised return −30 % at 0 wind,
++27 % at 30 %), yaw spin and command chatter match PPO's, so the deterministic actor is simply imprecise: the
+1-step Q-gradient at 50 Hz is too weak/noisy to pull it onto the target. A 1-seed, 25 M-step study (10 configs):
+
+| Setting (vs default) | Steady (cm) | Gust peak (cm) | Success | Bias 0 / 30 % wind (cm) |
+|---|---|---|---|---|
+| default: noise 0.2, 1-step, lr 3e-4 | 9.55 | 21.7 | 56.2 % | 1.5 / 12.6 |
+| expl./target noise 0.1 | 12.5 | 26.6 | 35.9 % | 4.3 / 16.7 |
+| noise 0.05 | 13.2 | 25.9 | 2.1 % | 10.2 / 14.3 |
+| noise 0.2, 3-step | 4.02 | 13.0 | 100 % | 1.9 / 5.4 |
+| noise 0.1, 3-step | 4.46 | 14.2 | 100 % | 2.3 / 5.1 |
+| noise 0.1, 5-step | 3.73 | 13.9 | 100 % | 1.4 / 5.2 |
+| noise 0.05, 5-step | 4.13 | 15.0 | 100 % | 1.0 / 6.1 |
+| **noise 0.1, 3-step, lr 1e-4 (selected)** | 4.08 | **12.5** | 98.8 % | 3.5 / 4.7 |
+| noise 0.1, 10-step | diverged (Q loss > 1e4 from 3.7 M) | | | |
+| noise 0.1, 5-step, lr 1e-4 | diverged (returns collapse at ~4 M) | | | |
+
+Lower noise alone makes it worse; **n-step returns are the fix** (offset −55 %). 3-step was chosen over 5-step because
+5-step diverged in one variant, and lr 1e-4 gave the lowest gust peak and best recovery (93 %) among the stable
+configs. The selected config was then trained with 3 seeds × 100 M steps (table above). Its static offset (seed 0,
+100 M) is 3.6 / 3.9 / 5.3 cm at 0 / 15 / 30 % wind (default hp: 5.3 / 8.0 / 12.0); what remains is mostly a 1.5–3.6 cm
+sag below the target plus up to 3.3 cm cross-wind — PPO-CTBR's is 0.9 / 1.3 / 2.1 cm.
 
 (LQR "success" is 0 although it rarely crashes at 40–60 %: without integral action its steady offset exceeds the
 10 cm success threshold.) Full tables incl. crash rates: [`results_v2/summary.md`](results_v2/summary.md).
@@ -130,6 +163,23 @@ here; the RL policies, trained with random gusts at saturation, handle it best.
 
 ![v1 wind sweep: RL vs PID](figures/wind_adaptation.png)
 
+### Paper figures (`hover_rl/paper_figs.py` → [`figures/paper/`](figures/paper/), PNG + SVG + PDF)
+
+| | Content |
+|---|---|
+| F1 | system / method diagram (simulator, controllers, RMA teacher–student) |
+| F2 | v2 in-range steady error, gust peak, recovery (bars = mean, dots = seeds) |
+| F3 | v2 wind sweep 0–80 %: success, steady error, gust peak (mean ± std bands) |
+| F4 | v1 → v2 sim gap per controller |
+| F5 | error vs time, one scripted episode (30 % wind, +40 % gust at 6 s) and median/IQR over 64 copies × 3 seeds |
+| F6 | RMA estimated vs true wind force |
+| F7 | v2 training curves (return, training error, student wind RMSE) |
+| F8 | TD3 hyper-parameter study (in-range metrics, static bias, training curves) |
+
+All final tables (mean ± std): [`results_v2/paper_tables.md`](results_v2/paper_tables.md).
+
+![F5 time response](figures/paper/F5_time_response.png)
+
 ## Questions answered with the data
 
 **Why a cascaded PID as the baseline?** It is what flies real quadrotors: PX4 and the Crazyflie firmware both use
@@ -160,7 +210,8 @@ very strong wind.
   (0.90 cm vs PID 1.66 cm in v2).
 - *Disadvantages:* RL only works where it was trained: in v2 beyond 60 % wind the PID-motor keeps 93–99 % success while
   PPO falls to 1–12 % and RMA to 54 %. RL needs a simulator, ~100 M steps per seed and careful design choices
-  (observation, action interface, randomisation, reward); TD3 with the v1 hyper-parameters failed in v2. A PID is
+  (observation, action interface, randomisation, reward); TD3 needed a hyper-parameter study (n-step returns) to hover
+  within 5 cm in v2 and still trails PPO. A PID is
   8 interpretable gains that tune in minutes and come with well-understood stability margins.
 
 ### Which conclusions hold, which do not
@@ -174,7 +225,7 @@ very strong wind.
 | The learned estimator really estimates the wind | **Yes** | RMSE 2 % of weight in range, correlation 0.994 |
 | CTBR is a better RL action space than motor commands | **Yes** (PPO) | −24 % steady error, −19 % recovery, 45 % vs 9.6 % success at 70 % wind |
 | LQR is better than PID | **No** | better gust peak only in the idealised v1; worse offset, saturation and delay robustness |
-| TD3 is competitive | **Yes** (v1) / **No** (v2) | v1: 100 % success, peak 7.5 cm; v2: 9.9 cm offset, 54 % success, 0 % at ≥ 40 % wind |
+| TD3 is competitive with PPO | **Yes** (v1) / **No** (v2, even tuned) | v1: 100 % success, peak 7.5 cm; v2 tuned: 4.39 vs 2.15 cm steady, 13.0 vs 10.6 cm peak, 15 % vs 84 % success at 60 % wind |
 
 ## Environments (`hover_rl/env.py`, `hover_rl/presets.py`)
 
@@ -206,7 +257,8 @@ re-run (its RL numbers reproduce to 1e-8).
 
 DQN was not re-trained in v2: 3 discrete levels per motor cannot express the wider thrust range and the CTBR set-points
 without redesigning its action set, and in v1 it already had the weakest gust rejection of the three RL algorithms.
-TD3 was re-trained once with its v1 hyper-parameters and not tuned further.
+TD3 in v2: 3 seeds × 100 M with the default hyper-parameters, a 10-config × 25 M-step study (seed 0), then the
+selected config 3 seeds × 100 M.
 
 Tuning notes for the classical controllers (so the comparison is fair): LQR/LQI first used a plain Riccati solve over
 the raw Q/R (numerically failed for wide weight ranges) → solved in Bryson-normalised coordinates; started from a
@@ -236,12 +288,17 @@ bash hover_rl/run_all.sh          # v1: PPO/TD3/DQN x 3 seeds
 bash hover_rl/tune_all_pid.sh     # PID / LQR / LQI, v1 and v2, tuning seeds 11-13
 bash hover_rl/run_v2.sh           # v2: PPO-motor, PPO-CTBR, RMA teacher x 3 seeds
 bash hover_rl/run_students.sh     # v2: RMA students (adaptation modules)
-bash hover_rl/run_td3_v2.sh       # v2: TD3-CTBR
+bash hover_rl/run_td3_v2.sh       # v2: TD3-CTBR, default hyper-parameters
+STEPS=25000000 bash hover_rl/td3_sweep.sh noise01_n3_lr1e4 '{"expl_noise":0.1,"target_noise":0.1,"noise_clip":0.25,"n_step":3,"lr":1e-4}'  # one study config
+bash hover_rl/td3_sweep_eval.sh noise01_n3_lr1e4   # evaluate + diagnose study configs
+bash hover_rl/run_td3t_v2.sh      # v2: TD3-CTBR, selected config, 3 seeds x 100 M
 hover_rl/run.sh hover_rl/evaluate.py --preset v1
 hover_rl/run.sh hover_rl/evaluate.py --preset v2_ctbr_priv  --out results_v2
 hover_rl/run.sh hover_rl/evaluate.py --preset v2_motor_priv --out results_v2
 hover_rl/run.sh hover_rl/wind_estimate.py --students runs_v2/student_ctbr_s*/student.pt
-python hover_rl/report.py && python hover_rl/report_v2.py
+hover_rl/run.sh hover_rl/time_response.py --preset v2_ctbr_priv  --groups pid_ctbr,ppo_ctbr,td3t_ctbr,student_ctbr,teacher_ctbr --out results_v2/time_response_ctbr.npz
+hover_rl/run.sh hover_rl/time_response.py --preset v2_motor_priv --groups pid_motor,lqi_motor,lqr_motor,ppo_motor --out results_v2/time_response_motor.npz
+python hover_rl/report.py && python hover_rl/report_v2.py && python hover_rl/paper_figs.py
 hover_rl/run.sh hover_rl/record.py --preset v2_ctbr_priv --algo student --model runs_v2/student_ctbr_s0/student.pt \
     --base_n 0.5 --gust_n 0.4 --label "RMA" --out media/v2_rma_wind.mp4
 ```
@@ -266,11 +323,15 @@ Drone-Stable-Hover-RL/
 │   ├── report.py         # v1 tables + figures
 │   ├── report_v2.py      # v2 tables + figures, classical-vs-RL figure
 │   ├── record.py         # headless camera recording under scripted wind
+│   ├── td3_diag.py       # static-bias / jitter / Q-calibration diagnosis of a policy
+│   ├── td3_sweep*.sh     # TD3 hyper-parameter study (train / evaluate)
+│   ├── time_response.py  # error-vs-time traces under a scripted gust
+│   ├── paper_figs.py     # paper figures (figures/paper/) + results_v2/paper_tables.md
 │   └── run*.sh, tune_all_pid.sh
 ├── baselines/            # tuned PID / LQR / LQI parameters (JSON) + tuning logs
 ├── runs/, runs_v2/       # training logs + configs (weights are git-ignored)
 ├── results/, results_v2/ # evaluation JSON + summary tables
-├── figures/              # all figures
+├── figures/              # all figures (paper/: F1–F8 as PNG, SVG, PDF)
 ├── media/                # videos and poster frames
 └── PPO/ TD3/ DQN/        # legacy 2025 scripts (not used for any number above)
 ```

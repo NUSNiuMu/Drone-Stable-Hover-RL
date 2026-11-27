@@ -1,0 +1,101 @@
+{
+  "note": "TD3 (CTBR, v2) hyper-parameter study. Seed 0, 25 M environment steps per setting (1024 envs), evaluated with the v2 protocol (512 episodes, eval seed 1000; sweep points 30 % and 50 % of weight). 'v1hp' = default setting (25 M snapshot of the 100 M default run).",
+  "configs": {
+    "v1hp": {
+      "round": 0,
+      "label": "default TD3 (Fujimoto et al.): expl. noise 0.2, target noise 0.2 / clip 0.5, 1-step, lr 3e-4",
+      "hp": {}
+    },
+    "noise01": {
+      "round": 1,
+      "label": "expl. 0.1, target 0.1 / clip 0.25",
+      "hp": {
+        "expl_noise": 0.1,
+        "target_noise": 0.1,
+        "noise_clip": 0.25
+      }
+    },
+    "noise005": {
+      "round": 1,
+      "label": "expl. 0.05, target 0.05 / clip 0.1",
+      "hp": {
+        "expl_noise": 0.05,
+        "target_noise": 0.05,
+        "noise_clip": 0.1
+      }
+    },
+    "noise01_n3": {
+      "round": 1,
+      "label": "noise01 + 3-step returns",
+      "hp": {
+        "expl_noise": 0.1,
+        "target_noise": 0.1,
+        "noise_clip": 0.25,
+        "n_step": 3
+      }
+    },
+    "n3_noise02": {
+      "round": 2,
+      "label": "v1 noise + 3-step returns",
+      "hp": {
+        "n_step": 3
+      }
+    },
+    "noise01_n5": {
+      "round": 2,
+      "label": "noise01 + 5-step returns",
+      "hp": {
+        "expl_noise": 0.1,
+        "target_noise": 0.1,
+        "noise_clip": 0.25,
+        "n_step": 5
+      }
+    },
+    "noise01_n3_lr1e4": {
+      "round": 2,
+      "label": "noise01_n3 + lr 1e-4",
+      "hp": {
+        "expl_noise": 0.1,
+        "target_noise": 0.1,
+        "noise_clip": 0.25,
+        "n_step": 3,
+        "lr": 0.0001
+      }
+    },
+    "noise01_n10": {
+      "round": 3,
+      "label": "noise01 + 10-step returns",
+      "hp": {
+        "expl_noise": 0.1,
+        "target_noise": 0.1,
+        "noise_clip": 0.25,
+        "n_step": 10
+      },
+      "diverged": "critic diverged (Q loss > 1e4 from 3.7 M steps, > 1e13 by 11 M); every episode crashes"
+    },
+    "noise005_n5": {
+      "round": 3,
+      "label": "expl. 0.05, target 0.05 / clip 0.1 + 5-step",
+      "hp": {
+        "expl_noise": 0.05,
+        "target_noise": 0.05,
+        "noise_clip": 0.1,
+        "n_step": 5
+      }
+    },
+    "noise01_n5_lr1e4": {
+      "round": 3,
+      "label": "noise01_n5 + lr 1e-4",
+      "hp": {
+        "expl_noise": 0.1,
+        "target_noise": 0.1,
+        "noise_clip": 0.25,
+        "n_step": 5,
+        "lr": 0.0001
+      },
+      "diverged": "returns collapsed at ~4 M steps, Q loss > 1e4 from 5.3 M; stopped at 13.8 M"
+    }
+  },
+  "chosen": "noise01_n3_lr1e4",
+  "choice_reason": "Stable n-step setting (n=3: no divergence in 4 runs; n=5 and n=10 diverged in 2 of 4 runs) with the best gust rejection and recovery among the stable configs (peak 12.5 cm, 93 % of episodes recover vs 73 %), steady error 4.1 cm, success 98.8 %. n=5 configs had slightly lower steady error (3.7 cm) but a 100 M-step, 3-seed run risks critic divergence."
+}

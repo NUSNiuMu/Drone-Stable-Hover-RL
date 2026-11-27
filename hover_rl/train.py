@@ -22,6 +22,7 @@ parser.add_argument("--env_steps", type=int, default=20_000_000, help="total env
 parser.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "..", "runs"))
 parser.add_argument("--preset", default="v1", help="v1 | v2_motor | v2_ctbr | v2_motor_priv | v2_ctbr_priv")
 parser.add_argument("--name", default=None, help="run name prefix (default: algo)")
+parser.add_argument("--hp", default="{}", help='JSON of agent constructor overrides, e.g. {"expl_noise": 0.1}')
 parser.add_argument("--log_every", type=int, default=32, help="vector steps between log rows")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
@@ -43,12 +44,13 @@ def main():
     cfg.seed = args.seed
     env = HoverWindEnv(cfg)
     dev = env.device
-    agent = ALGOS[args.algo](env.obs_dim, 4, env.num_envs, dev)
+    hp = json.loads(args.hp)
+    agent = ALGOS[args.algo](env.obs_dim, 4, env.num_envs, dev, **hp)
 
     run_dir = os.path.abspath(os.path.join(args.out, f"{args.name or args.algo}_s{args.seed}"))
     os.makedirs(run_dir, exist_ok=True)
     with open(os.path.join(run_dir, "config.json"), "w") as f:
-        json.dump({"algo": args.algo, "preset": args.preset, "obs_dim": env.obs_dim, "seed": args.seed, "num_envs": args.num_envs, "env_steps": args.env_steps,
+        json.dump({"algo": args.algo, "preset": args.preset, "obs_dim": env.obs_dim, "seed": args.seed, "num_envs": args.num_envs, "env_steps": args.env_steps, "hp": hp,
                    "robot_mass_kg": env.robot_mass, "robot_weight_N": env.robot_weight, "k_f": env.k_f,
                    "step_dt": env.step_dt, "episode_length_s": cfg.episode_length_s,
                    "wind_N": [cfg.wind_min, cfg.wind_max]}, f, indent=2)
