@@ -1,8 +1,8 @@
 """Train one algorithm with one seed on the unified wind-hover task.
 
-    python hover_rl/train.py --algo ppo --seed 0 --env_steps 20000000
+    python hover_rl/train.py --algo ppo --seed 0 --env_steps 20000000 [--preset v2_ctbr] [--name ppo_ctbr]
 
-Writes runs/<algo>_s<seed>/{model.pt, train_log.csv, config.json}. The FINAL policy is saved (no best-checkpoint
+Writes <out>/<name or algo>_s<seed>/{model.pt, train_log.csv, config.json}. The FINAL policy is saved (no best-checkpoint
 selection) so that evaluation is not biased by picking the luckiest snapshot.
 """
 
@@ -20,6 +20,8 @@ parser.add_argument("--seed", type=int, default=0)
 parser.add_argument("--num_envs", type=int, default=1024)
 parser.add_argument("--env_steps", type=int, default=20_000_000, help="total environment transitions")
 parser.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "..", "runs"))
+parser.add_argument("--preset", default="v1", help="v1 | v2_motor | v2_ctbr | v2_motor_priv | v2_ctbr_priv")
+parser.add_argument("--name", default=None, help="run name prefix (default: algo)")
 parser.add_argument("--log_every", type=int, default=32, help="vector steps between log rows")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
@@ -30,22 +32,23 @@ import torch  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from hover_rl.algos import ALGOS  # noqa: E402
-from hover_rl.env import HoverWindEnv, HoverWindEnvCfg  # noqa: E402
+from hover_rl.env import HoverWindEnv  # noqa: E402
+from hover_rl.presets import make_cfg  # noqa: E402
 
 
 def main():
     torch.backends.cudnn.deterministic = True
-    cfg = HoverWindEnvCfg()
+    cfg = make_cfg(args.preset)
     cfg.scene.num_envs = args.num_envs
     cfg.seed = args.seed
     env = HoverWindEnv(cfg)
     dev = env.device
-    agent = ALGOS[args.algo](18, 4, env.num_envs, dev)
+    agent = ALGOS[args.algo](env.obs_dim, 4, env.num_envs, dev)
 
-    run_dir = os.path.abspath(os.path.join(args.out, f"{args.algo}_s{args.seed}"))
+    run_dir = os.path.abspath(os.path.join(args.out, f"{args.name or args.algo}_s{args.seed}"))
     os.makedirs(run_dir, exist_ok=True)
     with open(os.path.join(run_dir, "config.json"), "w") as f:
-        json.dump({"algo": args.algo, "seed": args.seed, "num_envs": args.num_envs, "env_steps": args.env_steps,
+        json.dump({"algo": args.algo, "preset": args.preset, "obs_dim": env.obs_dim, "seed": args.seed, "num_envs": args.num_envs, "env_steps": args.env_steps,
                    "robot_mass_kg": env.robot_mass, "robot_weight_N": env.robot_weight, "k_f": env.k_f,
                    "step_dt": env.step_dt, "episode_length_s": cfg.episode_length_s,
                    "wind_N": [cfg.wind_min, cfg.wind_max]}, f, indent=2)
@@ -69,7 +72,7 @@ def main():
         out = agent.observe(nobs, rew, term, trunc, env.terminal_obs)
         info = out or info
         ep_ret += rew
-        err_acc += env.terminal_obs[:, 15:18].norm(dim=-1).mean().item()
+        err_acc += env.terminal_err.mean().item()
         err_cnt += 1
         ended = term | trunc
         if ended.any():

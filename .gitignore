@@ -66,3 +66,4 @@ training_logs/
 
 # Re-run outputs: keep curves/configs/results, drop verbose Isaac logs
 runs/logs/
+runs_v2/logs/

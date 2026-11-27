@@ -1,0 +1,113 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/niumu/workspace/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 12
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 12
+	Physics step-size     : 0.01
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+[INFO]: Time taken for scene creation : 1.423794 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 1024
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : []
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.558212 seconds
+[INFO]: Completed setting up the environment...
+Setting seed: 12000
+iter 0 best 0.2089 steady 0.0777 peak 0.1528 crash 0.000 | mean [0.0408, 0.0612, 0.35, 0.428, 0.176, 1.83, 2.12, 0.0677, 0.00124, 9.56e-05, 0.325]
+Setting seed: 12001
+iter 1 best 0.1417 steady 0.0497 peak 0.1113 crash 0.000 | mean [0.0339, 0.0637, 0.331, 0.494, 0.177, 1.72, 1.82, 0.0528, 0.00142, 0.000111, 0.362]
+Setting seed: 12002
+iter 2 best 0.1402 steady 0.0426 peak 0.1311 crash 0.000 | mean [0.0287, 0.0649, 0.265, 0.656, 0.172, 1.56, 1.75, 0.0442, 0.00183, 0.000141, 0.302]
+Setting seed: 12003
+iter 3 best 0.1518 steady 0.0548 peak 0.1230 crash 0.000 | mean [0.0263, 0.0648, 0.251, 0.506, 0.185, 1.7, 1.84, 0.0373, 0.00178, 0.000164, 0.248]
+Setting seed: 12004
+iter 4 best 0.1394 steady 0.0470 peak 0.1245 crash 0.000 | mean [0.0263, 0.08, 0.276, 0.573, 0.177, 1.63, 1.51, 0.0464, 0.00195, 0.000146, 0.24]
+Setting seed: 12005
+iter 5 best 0.1595 steady 0.0539 peak 0.1353 crash 0.000 | mean [0.0258, 0.0795, 0.304, 0.611, 0.169, 1.66, 1.3, 0.0464, 0.00181, 0.000154, 0.234]
+Setting seed: 12006
+iter 6 best 0.1565 steady 0.0509 peak 0.1449 crash 0.000 | mean [0.0248, 0.0817, 0.278, 0.727, 0.179, 1.75, 1.22, 0.0436, 0.0018, 0.000173, 0.205]
+Setting seed: 12007
+iter 7 best 0.1341 steady 0.0446 peak 0.1155 crash 0.000 | mean [0.0247, 0.0807, 0.27, 0.831, 0.209, 1.65, 1.1, 0.0448, 0.00167, 0.000191, 0.203]
+Setting seed: 12008
+iter 8 best 0.1312 steady 0.0420 peak 0.1234 crash 0.000 | mean [0.0235, 0.0862, 0.313, 0.891, 0.241, 1.64, 1.07, 0.0422, 0.0019, 0.000206, 0.183]
+Setting seed: 12009
+iter 9 best 0.1538 steady 0.0531 peak 0.1221 crash 0.000 | mean [0.0235, 0.0833, 0.283, 0.961, 0.217, 1.64, 0.919, 0.0418, 0.00181, 0.000188, 0.162]
+Setting seed: 12010
+iter 10 best 0.1449 steady 0.0480 peak 0.1317 crash 0.000 | mean [0.0229, 0.086, 0.292, 0.912, 0.24, 1.65, 0.975, 0.0389, 0.00173, 0.000182, 0.154]
+Setting seed: 12011
+iter 11 best 0.1362 steady 0.0468 peak 0.1140 crash 0.000 | mean [0.0229, 0.0818, 0.286, 0.814, 0.236, 1.74, 0.857, 0.0392, 0.00159, 0.000174, 0.159]
+Setting seed: 12012
+iter 12 best 0.1534 steady 0.0459 peak 0.1506 crash 0.000 | mean [0.0227, 0.0895, 0.292, 0.883, 0.235, 1.76, 0.685, 0.0402, 0.00162, 0.000146, 0.137]
+Setting seed: 12013
+iter 13 best 0.1332 steady 0.0451 peak 0.1183 crash 0.000 | mean [0.0228, 0.0916, 0.317, 0.856, 0.231, 1.77, 1.03, 0.0404, 0.00167, 0.00014, 0.13]
+Setting seed: 12014
+iter 14 best 0.1326 steady 0.0503 peak 0.0962 crash 0.000 | mean [0.0224, 0.0884, 0.35, 0.836, 0.226, 1.86, 0.899, 0.0426, 0.00171, 0.000133, 0.125]
+Setting seed: 12015
+iter 15 best 0.1249 steady 0.0396 peak 0.1164 crash 0.000 | mean [0.0224, 0.0834, 0.352, 0.892, 0.217, 1.91, 0.853, 0.0442, 0.00172, 0.000139, 0.118]
+Setting seed: 12016
+iter 16 best 0.1322 steady 0.0477 peak 0.1057 crash 0.000 | mean [0.0222, 0.0838, 0.36, 0.877, 0.213, 1.91, 0.893, 0.0447, 0.00194, 0.000146, 0.115]
+Setting seed: 12017
+iter 17 best 0.1331 steady 0.0416 peak 0.1264 crash 0.000 | mean [0.0219, 0.0845, 0.351, 0.892, 0.221, 1.93, 1.01, 0.0446, 0.00207, 0.000172, 0.107]
+Setting seed: 12018
+iter 18 best 0.1280 steady 0.0466 peak 0.0946 crash 0.000 | mean [0.0219, 0.0874, 0.341, 0.906, 0.232, 1.9, 1.05, 0.0462, 0.00222, 0.000158, 0.106]
+Setting seed: 12019
+iter 19 best 0.1065 steady 0.0328 peak 0.1074 crash 0.000 | mean [0.0214, 0.086, 0.361, 1.0, 0.23, 1.95, 1.09, 0.0452, 0.00226, 0.000134, 0.103]
+Setting seed: 12020
+iter 20 best 0.1165 steady 0.0374 peak 0.1077 crash 0.000 | mean [0.0212, 0.08, 0.372, 1.0, 0.24, 1.95, 1.08, 0.0469, 0.00244, 0.000134, 0.0993]
+Setting seed: 12021
+iter 21 best 0.1099 steady 0.0343 peak 0.1031 crash 0.000 | mean [0.021, 0.0809, 0.374, 0.939, 0.255, 1.96, 1.16, 0.0474, 0.00258, 0.000143, 0.1]
+Setting seed: 12022
+iter 22 best 0.1064 steady 0.0379 peak 0.0885 crash 0.000 | mean [0.021, 0.0799, 0.381, 1.01, 0.263, 2.0, 1.19, 0.0467, 0.00267, 0.000138, 0.096]
+Setting seed: 12023
+iter 23 best 0.1196 steady 0.0400 peak 0.1028 crash 0.000 | mean [0.0209, 0.0789, 0.41, 0.935, 0.259, 2.05, 1.18, 0.0464, 0.00273, 0.00014, 0.0953]
+Setting seed: 12024
+iter 24 best 0.1058 steady 0.0324 peak 0.1062 crash 0.000 | mean [0.0208, 0.0782, 0.451, 0.97, 0.257, 2.1, 1.22, 0.0464, 0.00275, 0.000153, 0.0941]
+Setting seed: 12025
+iter 25 best 0.1111 steady 0.0396 peak 0.0911 crash 0.000 | mean [0.0208, 0.0769, 0.516, 1.13, 0.265, 2.09, 1.22, 0.0473, 0.00268, 0.000159, 0.0936]
+Setting seed: 12026
+iter 26 best 0.1094 steady 0.0367 peak 0.0962 crash 0.000 | mean [0.0207, 0.0778, 0.534, 1.09, 0.265, 2.1, 1.12, 0.0487, 0.00265, 0.000156, 0.0923]
+Setting seed: 12027
+iter 27 best 0.1126 steady 0.0337 peak 0.1110 crash 0.000 | mean [0.0204, 0.0804, 0.513, 1.14, 0.27, 2.15, 1.19, 0.0495, 0.00251, 0.000154, 0.0913]
+Setting seed: 12028
+iter 28 best 0.1061 steady 0.0323 peak 0.1042 crash 0.000 | mean [0.0203, 0.0786, 0.518, 1.09, 0.271, 2.15, 1.29, 0.0512, 0.00252, 0.000148, 0.0909]
+Setting seed: 12029
+iter 29 best 0.1050 steady 0.0368 peak 0.0861 crash 0.000 | mean [0.0203, 0.0769, 0.501, 1.04, 0.27, 2.19, 1.21, 0.0521, 0.0025, 0.000134, 0.0914]
+Setting seed: 12999
+final score 0.1297 steady 0.0434 peak 0.1114 crash 0.000
+GAINS {"pos_xy": 0.020437775179743767, "pos_z": 0.0760287344455719, "vel_xy": 0.46515291929244995, "vel_z": 1.0446279048919678, "att": 0.28250712156295776, "rate": 2.36891508102417, "rate_yaw": 1.301760196685791, "thrust": 0.04276522621512413, "torque": 0.0025118247140198946, "torque_yaw": 8.857497596181929e-05, "err_clip": 0.09551200270652771}
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/home/niumu/workspace/isaaclab-env/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /home/niumu/workspace/isaaclab-env/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20261126_211539.log
+2026-11-26 13:15:39 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-11-26 13:15:39 [2ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/home/niumu/workspace/IsaacLab/apps/rendering_modes' or '/home/niumu/workspace/IsaacLab/apps/rendering_modes/config'
+2026-11-26 13:15:39 [130ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-11-26 13:15:39 [439ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-11-26 13:15:40 [540ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 580.178.04    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 3080 Ti       | Yes: 0 |     | 12534   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2208      | 0dbc7b2f.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 22.04.5 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.5, Kernel: 6.8.0-149-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101004 (1.21.1.4)
+| Processor: Intel(R) Core(TM) i9-10850K CPU @ 3.60GHz
+| Cores: 10 | Logical Cores: 20
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 31978 | Free Memory: 13368
+| Total Page/Swap (MB): 2047 | Free Page/Swap: 1
+|---------------------------------------------------------------------------------------------|
+2026-11-26 13:15:46 [6,881ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-11-26 13:15:46 [6,925ms] [Warning] [omni.kvdb.plugin] Disabling key-value database because another kit process is locking it

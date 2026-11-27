@@ -1,0 +1,62 @@
+{
+  "weight_N": 0.2766420352512906,
+  "cases": [
+    0.3,
+    0.6
+  ],
+  "students": [
+    "runs_v2/student_ctbr_s0/student.pt",
+    "runs_v2/student_ctbr_s1/student.pt",
+    "runs_v2/student_ctbr_s2/student.pt"
+  ],
+  "summary": {
+    "student_ctbr_s0@0.3": {
+      "rmse_all": 0.031217949464917183,
+      "rmse_steady": 0.020563844591379166,
+      "rmse_gust": 0.09509197622537613,
+      "magnitude_bias_steady": -0.00229761004447937,
+      "corr_xy": 0.9936268526928315,
+      "alive": 1.0
+    },
+    "student_ctbr_s0@0.6": {
+      "rmse_all": 0.07074113190174103,
+      "rmse_steady": 0.051966503262519836,
+      "rmse_gust": 0.11581568419933319,
+      "magnitude_bias_steady": -0.028968067839741707,
+      "corr_xy": 0.9940362873860914,
+      "alive": 1.0
+    },
+    "student_ctbr_s1@0.3": {
+      "rmse_all": 0.03125567361712456,
+      "rmse_steady": 0.020498983561992645,
+      "rmse_gust": 0.0947355255484581,
+      "magnitude_bias_steady": -0.0007842976483516395,
+      "corr_xy": 0.9935869156710285,
+      "alive": 1.0
+    },
+    "student_ctbr_s1@0.6": {
+      "rmse_all": 0.06631579995155334,
+      "rmse_steady": 0.05479497089982033,
+      "rmse_gust": 0.14373891055583954,
+      "magnitude_bias_steady": -0.0318555124104023,
+      "corr_xy": 0.9945951781458456,
+      "alive": 1.0
+    },
+    "student_ctbr_s2@0.3": {
+      "rmse_all": 0.029643073678016663,
+      "rmse_steady": 0.019775891676545143,
+      "rmse_gust": 0.09053342789411545,
+      "magnitude_bias_steady": -0.00144979078322649,
+      "corr_xy": 0.9941377390572579,
+      "alive": 1.0
+    },
+    "student_ctbr_s2@0.6": {
+      "rmse_all": 0.05915582552552223,
+      "rmse_steady": 0.050261449068784714,
+      "rmse_gust": 0.1202506422996521,
+      "magnitude_bias_steady": -0.021537968888878822,
+      "corr_xy": 0.9946169532658002,
+      "alive": 1.0
+    }
+  }
+}

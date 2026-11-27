@@ -1,0 +1,93 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/niumu/workspace/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 11
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 11
+	Physics step-size     : 0.01
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+[INFO]: Time taken for scene creation : 1.353511 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 1024
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : []
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.562222 seconds
+[INFO]: Completed setting up the environment...
+Setting seed: 11000
+iter 0 best 0.4858 steady 0.1770 peak 0.4078 crash 0.000 | mean [5.76, 4.11, 0.252, 8.75, 3.27, 0.33, 12.6, 13.7]
+Setting seed: 11001
+iter 1 best 0.4230 steady 0.1760 peak 0.3496 crash 0.000 | mean [5.01, 3.43, 0.232, 9.41, 4.33, 0.498, 8.35, 11.6]
+Setting seed: 11002
+iter 2 best 0.2119 steady 0.0632 peak 0.2469 crash 0.000 | mean [5.42, 4.11, 0.404, 12.9, 6.85, 0.583, 5.51, 11.8]
+Setting seed: 11003
+iter 3 best 0.2275 steady 0.0732 peak 0.2234 crash 0.000 | mean [5.76, 4.38, 0.68, 14.6, 8.59, 0.964, 5.09, 10.8]
+Setting seed: 11004
+iter 4 best 0.2409 steady 0.0595 peak 0.2592 crash 0.000 | mean [6.36, 4.54, 0.558, 16.7, 8.9, 2.53, 5.1, 10.4]
+Setting seed: 11005
+iter 5 best 0.1748 steady 0.0405 peak 0.2495 crash 0.000 | mean [7.24, 4.84, 1.14, 18.2, 8.41, 3.15, 5.31, 10.8]
+Setting seed: 11006
+iter 6 best 0.1675 steady 0.0362 peak 0.2169 crash 0.000 | mean [8.14, 4.51, 1.79, 17.5, 9.25, 3.54, 5.54, 10.4]
+Setting seed: 11007
+iter 7 best 0.1855 steady 0.0364 peak 0.2489 crash 0.000 | mean [8.11, 4.64, 2.78, 16.5, 8.91, 5.57, 5.47, 10.4]
+Setting seed: 11008
+iter 8 best 0.1773 steady 0.0370 peak 0.2411 crash 0.000 | mean [8.45, 4.85, 3.82, 17.0, 7.91, 8.46, 5.41, 10.6]
+Setting seed: 11009
+iter 9 best 0.1695 steady 0.0480 peak 0.2177 crash 0.000 | mean [8.53, 5.21, 4.54, 18.0, 7.93, 8.99, 5.48, 10.6]
+Setting seed: 11010
+iter 10 best 0.1546 steady 0.0241 peak 0.2292 crash 0.000 | mean [9.04, 5.24, 5.26, 18.4, 7.6, 10.1, 5.65, 10.6]
+Setting seed: 11011
+iter 11 best 0.1468 steady 0.0201 peak 0.2259 crash 0.000 | mean [9.58, 5.31, 5.92, 19.0, 7.19, 9.44, 5.71, 10.6]
+Setting seed: 11012
+iter 12 best 0.1554 steady 0.0217 peak 0.2370 crash 0.000 | mean [9.83, 5.3, 6.35, 19.8, 7.67, 8.72, 5.84, 10.7]
+Setting seed: 11013
+iter 13 best 0.1520 steady 0.0242 peak 0.2243 crash 0.000 | mean [9.84, 5.31, 6.75, 20.7, 7.5, 9.6, 5.96, 10.8]
+Setting seed: 11014
+iter 14 best 0.1549 steady 0.0227 peak 0.2389 crash 0.000 | mean [10.1, 5.27, 7.07, 21.1, 7.56, 11.6, 6.01, 10.9]
+Setting seed: 11015
+iter 15 best 0.1476 steady 0.0230 peak 0.2294 crash 0.000 | mean [10.2, 5.38, 7.37, 22.2, 7.86, 12.9, 6.03, 11.0]
+Setting seed: 11016
+iter 16 best 0.1475 steady 0.0207 peak 0.2239 crash 0.000 | mean [10.4, 5.43, 7.3, 23.5, 8.09, 15.9, 6.13, 11.1]
+Setting seed: 11017
+iter 17 best 0.1442 steady 0.0188 peak 0.2284 crash 0.000 | mean [10.6, 5.47, 7.3, 23.3, 8.51, 15.8, 6.13, 11.1]
+Setting seed: 11018
+iter 18 best 0.1457 steady 0.0219 peak 0.2245 crash 0.000 | mean [10.7, 5.46, 7.35, 22.9, 8.45, 17.1, 6.12, 11.1]
+Setting seed: 11019
+iter 19 best 0.1446 steady 0.0231 peak 0.2207 crash 0.000 | mean [10.8, 5.51, 7.3, 23.1, 8.07, 16.8, 6.13, 11.2]
+Setting seed: 11999
+final score 0.1474 steady 0.0197 peak 0.2254 crash 0.000
+GAINS {"kp_xy": 11.838812828063965, "kd_xy": 5.378704071044922, "ki_xy": 10.459771156311035, "kp_z": 30.6992130279541, "kd_z": 9.815714836120605, "ki_z": 22.8831844329834, "k_att": 6.062939643859863, "k_rate": 11.374419212341309}
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/home/niumu/workspace/isaaclab-env/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /home/niumu/workspace/isaaclab-env/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20261126_182801.log
+2026-11-26 10:28:01 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-11-26 10:28:01 [35ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/home/niumu/workspace/IsaacLab/apps/rendering_modes' or '/home/niumu/workspace/IsaacLab/apps/rendering_modes/config'
+2026-11-26 10:28:01 [674ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-11-26 10:28:02 [1,132ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-11-26 10:28:02 [1,266ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 580.178.04    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 3080 Ti       | Yes: 0 |     | 12534   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2208      | 0dbc7b2f.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 22.04.5 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.5, Kernel: 6.8.0-149-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101004 (1.21.1.4)
+| Processor: Intel(R) Core(TM) i9-10850K CPU @ 3.60GHz
+| Cores: 10 | Logical Cores: 20
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 31978 | Free Memory: 9750
+| Total Page/Swap (MB): 2047 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-11-26 10:28:10 [8,900ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-11-26 10:28:10 [8,955ms] [Warning] [omni.kvdb.plugin] Disabling key-value database because another kit process is locking it

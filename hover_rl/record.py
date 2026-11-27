@@ -1,6 +1,8 @@
 """Render a scripted wind scenario for one trained policy (headless camera), frames -> MP4.
 
     hover_rl/run.sh hover_rl/record.py --model runs/ppo_s0/model.pt --algo ppo --label "PPO" --out media/ppo.mp4
+    hover_rl/run.sh hover_rl/record.py --preset v2_ctbr_priv --algo pid --model pid/v2_ctbr_s11.json \
+        --base_n 0.5 --gust_n 0.4 --label "PID" --out media/v2_pid.mp4      (v2: wind given as fraction of weight)
 
 Scenario (same seed for every policy, so the wind is identical):
   0-3 s  no wind   |   3-12 s base wind (default 0.06 N)   |   7 s gust pulse (default +0.10 N, same direction) for 0.5 s
@@ -17,7 +19,9 @@ from isaaclab.app import AppLauncher
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", required=True)
-parser.add_argument("--algo", choices=["ppo", "td3", "dqn"], required=True)
+parser.add_argument("--algo", choices=["ppo", "td3", "dqn", "pid", "student"], required=True)
+parser.add_argument("--preset", default="v1")
+parser.add_argument("--obs_dim", type=int, default=18, help="observation entries the RL policy was trained on")
 parser.add_argument("--label", default=None)
 parser.add_argument("--out", required=True)
 parser.add_argument("--seed", type=int, default=3)
@@ -44,8 +48,9 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR  # noqa: E402
 from isaaclab.utils.math import quat_from_euler_xyz  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from hover_rl.algos import ALGOS  # noqa: E402
-from hover_rl.env import HoverWindEnv, HoverWindEnvCfg  # noqa: E402
+from hover_rl.control import load_controller  # noqa: E402
+from hover_rl.env import HoverWindEnv  # noqa: E402
+from hover_rl.presets import make_cfg  # noqa: E402
 
 T_WIND, T_GUST, T_END = 3.0, 7.0, 12.0
 GUST_S = 0.5
@@ -59,7 +64,8 @@ def font(sz):
 
 
 def main():
-    cfg = HoverWindEnvCfg()
+    cfg = make_cfg(args.preset)
+    cfg.seed = args.seed
     cfg.scene.num_envs = 1
     cfg.episode_length_s = T_END + 1.0
     cfg.randomize_episode_start = False
@@ -77,9 +83,8 @@ def main():
     env = HoverWindEnv(cfg, render_mode="rgb_array")
     dev = env.device
 
-    agent = ALGOS[args.algo](18, 4, 1, dev)
-    agent.load_state_dict(torch.load(args.model, map_location=dev))
-    agent.norm.frozen = True
+    ctrl = load_controller(args.algo, args.model, env, args.obs_dim)
+    unit = 1.0 if args.preset == "v1" else env.W0  # v2: wind arguments are fractions of the nominal weight
 
     markers = VisualizationMarkers(VisualizationMarkersCfg(
         prim_path="/Visuals/hover",
@@ -91,10 +96,11 @@ def main():
                 visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.9, 0.15, 0.1))),
         }))
 
-    BASE_N, BASE_DIR = args.base_n, math.radians(args.wind_deg)
-    GUST_N, GUST_DIR = args.gust_n, math.radians(args.gust_deg)
+    BASE_N, BASE_DIR = args.base_n * unit, math.radians(args.wind_deg)
+    GUST_N, GUST_DIR = args.gust_n * unit, math.radians(args.gust_deg)
     obs, _ = env.reset(seed=args.seed)
     obs = obs["policy"]
+    ctrl.reset()
     origin = env.scene.env_origins[0]
     target_w = origin + torch.tensor([0.0, 0.0, 1.0], device=dev)
     steps = int(round((args.max_s or T_END) / env.step_dt))
@@ -114,7 +120,7 @@ def main():
         if abs(t - T_GUST) < 1e-6:
             env.gust_vec[0] = torch.tensor([GUST_N * math.cos(GUST_DIR), GUST_N * math.sin(GUST_DIR), 0.0], device=dev)
             env.gust_left[0] = int(round(GUST_S / env.step_dt)) + 1
-        obs, _, term, _, _ = env.step(agent.act(obs, deterministic=True))
+        obs, _, term, _, _ = env.step(ctrl.act(obs, deterministic=True))
         obs = obs["policy"]
         pos_w = env._robot.data.root_pos_w[0]
         err = float(env.position_error()[0])
@@ -136,10 +142,11 @@ def main():
             continue
         img = Image.fromarray(np.ascontiguousarray(frame[:, :, :3]).astype(np.uint8))
         d = ImageDraw.Draw(img)
-        phase = "no wind" if t < T_WIND else (f"GUST +{GUST_N:.2f} N" if T_GUST <= t < T_GUST + GUST_S else f"wind {BASE_N:.2f} N")
+        pw = lambda f: f"{f:.2f} N" if unit == 1.0 else f"{f:.2f} N ({100 * f / unit:.0f}% wt)"  # noqa: E731
+        phase = "no wind" if t < T_WIND else (f"GUST +{pw(GUST_N)}" if T_GUST <= t < T_GUST + GUST_S else f"wind {pw(BASE_N)}")
         d.rectangle([0, 0, W, int(H * 0.17)], fill=(0, 0, 0))
         d.text((int(W * 0.03), int(H * 0.02)), args.label or args.algo.upper(), font=f_big, fill=(255, 255, 255))
-        d.text((int(W * 0.03), int(H * 0.095)), f"t = {t:4.1f} s   {phase}   |F| = {mag:.3f} N", font=f_small,
+        d.text((int(W * 0.03), int(H * 0.095)), f"t = {t:4.1f} s   {phase}", font=f_small,
                fill=(255, 210, 120) if t >= T_WIND else (200, 200, 200))
         d.text((int(W * 0.62), int(H * 0.035)), f"error {100 * err:4.1f} cm", font=f_small, fill=(255, 255, 255))
         if bool(term[0]):
@@ -151,7 +158,9 @@ def main():
     tt = np.arange(len(e)) * env.step_dt
     print(f"RECORD {args.out}: mean err no-wind {e[(tt >= 1) & (tt < T_WIND)].mean():.4f} m, "
           f"wind {e[(tt >= T_WIND + 1) & (tt < T_GUST)].mean():.4f} m, gust peak {e[tt >= T_GUST].max():.4f} m", flush=True)
-    env.close()
+    # Isaac Sim sometimes hangs in shutdown after headless camera rendering; the video is complete at this point
+    sys.stdout.flush()
+    os._exit(0)
 
 
 if __name__ == "__main__":

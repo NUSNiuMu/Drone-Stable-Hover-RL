@@ -1,215 +1,305 @@
-# Drone Stable Hover RL
+# Wind-Resistant Hover Controller Design (Drone Stable Hover RL)
 
-Deep reinforcement learning for wind-resistant quadrotor hovering: PPO vs TD3 vs DQN on a Crazyflie 2.x in
-**Isaac Sim 4.5 / Isaac Lab 2.1**, compared under one shared environment, one wind model and one evaluation protocol.
+Which controller should hold a Crazyflie-class quadrotor at a point in gusty wind — a hand-tuned **cascaded PID**,
+an **LQR / LQI**, or a **reinforcement-learning** policy (PPO, TD3, DQN, and an **RMA-style wind-adaptive
+teacher–student** policy)? Every controller is tuned or trained on its own seeds and evaluated with one protocol in
+**Isaac Sim 4.5 / Isaac Lab 2.1**, first in an idealised simulator (v1), then in a more realistic one (v2: motor lag,
+command delay, randomised mass/thrust, sensor noise, real thrust-to-weight ratio). Conclusions are reported as
+measured, including where RL loses.
 
-> **2026-11 re-run.** The original 2025 code trained each algorithm in a *different* environment (DQN: 9-D state and
-> no wind; TD3: Stable-Baselines3 with its own reward; PPO: 18-D state with 0.2–0.4 N wind applied in the body frame),
-> and the previously reported "recovery time" was actually the episode duration (`steps × 0.01 s`, capped at 3.0 s).
-> Those numbers are therefore **superseded**. Everything below was regenerated with the unified pipeline in
-> [`hover_rl/`](hover_rl/); the original scripts are kept in `PPO/`, `TD3/`, `DQN/` for reference (see
-> [Legacy code](#legacy-code)).
+![Cascaded PID vs RMA adaptive policy under a strong gust](media/v2_pid_vs_rma_poster.png)
 
-## Results (3 seeds × 50 M steps per algorithm)
+[`media/v2_pid_vs_rma_wind.mp4`](media/v2_pid_vs_rma_wind.mp4) — v2 simulator, cascaded PID (left) vs RMA adaptive
+RL policy (right), same scripted wind: 0–3 s calm, 3 s steady wind of 50 % of the drone's weight (already outside the
+RL training range of 0–35 %), 7 s an extra 40 % gust in the same direction for 0.5 s (90 % of the weight in total).
+Red arrow = wind force, green cube = target. Peak deviation during the gust: PID 29.7 cm, RMA policy 13.6 cm (same seed, airframe and sensor noise).
 
-![PPO vs DQN under a +0.10 N gust](media/ppo_vs_dqn_poster.png)
+## Key findings
 
-[`media/ppo_vs_dqn_wind.mp4`](media/ppo_vs_dqn_wind.mp4) — PPO (left) and DQN (right), seed 0, same scripted wind:
-0–3 s no wind, 3 s base wind 0.06 N, 7 s gust +0.10 N in the same direction for 0.5 s (0.16 N ≈ 58 % of the
-drone's weight in total). Red arrow = wind force, green cube = target. In this clip the peak deviation during the
-gust is 9.7 cm for PPO and 14.2 cm for DQN.
+**Realistic simulator (v2), inside the training wind range (0–35 % of weight + 40 % gust):**
 
-Protocol: 512 episodes/model, eval seed 1000, 12 s episodes, base wind U[0.02, 0.08] N (drone weight 0.277 N), gust pulse +0.10 N for 0.5 s at 6 s. Recovery band 5 cm held 0.5 s; success = no crash and last-2 s error < 10 cm. Mean ± std across 3 training seeds.
+- The **RMA adaptive policy is the best deployable controller on every in-range metric**: 0.90 cm steady error,
+  9.2 cm gust peak, 0.84 s recovery — vs the cascaded PID's 1.66 cm / 21.0 cm / 1.58 s
+  (−46 % / −56 % / −47 %) and plain PPO's 2.15 cm / 10.6 cm / 1.09 s (−58 % / −13 % / −23 %).
+- Its learned wind estimator tracks the true wind force with 2 % (of weight) RMSE in steady wind (correlation 0.994)
+  and is within 17 % of a teacher that is *given* the true wind.
+- **CTBR beats direct motor commands for RL** (PPO: −24 % steady error, −19 % recovery time, far better beyond range).
+- **LQR/LQI are the most fragile under realistic actuation**: the unmodelled motor lag and delay cost LQI 14 % crashes;
+  LQR without integral action keeps a 15 cm offset (randomised mass/thrust and steady wind are constant disturbances).
 
-| Algorithm | Position error (cm) | Gust peak error (cm) | Recovery time (s) | Success rate | Crash rate |
+**Where RL loses:**
+
+- **Strong wind beyond the training range: the cascaded PID is the most robust controller.** At a steady 80 % of the
+  weight + gust, PID (motor output) still succeeds in 93 % of episodes, RMA 54 %, PPO-CTBR 12 %, PPO-motor 1 %. The
+  learned policies were trained on 0–35 % wind and do not extrapolate the way an integrator does.
+- **Steady-state precision in the idealised v1 simulator:** PID (0.81 cm) and DQN (0.80 cm) beat PPO (1.13 cm).
+- **TD3 did not transfer to the realistic simulator** with the v1 hyper-parameters: no crashes, but a ~10 cm hover
+  offset, 54 % success in range and 0 % at ≥ 40 % wind (3 seeds × 100 M steps; it was not re-tuned).
+- RL needs 100 M simulated steps (~1 h on a GPU per seed); the PID is 8 numbers tuned in ~10 minutes.
+
+## Methods at a glance
+
+| Method | Full name / idea | How it works here | Input → output | Key hyper-parameters | Source |
 |---|---|---|---|---|---|
-| PPO | 1.13 ± 0.24 | 7.1 ± 0.3 | 0.54 ± 0.04 | 99.7 ± 0.2% | 0.3% |
-| TD3 | 1.84 ± 0.24 | 7.5 ± 0.2 | 0.62 ± 0.04 | 100.0 ± 0.0% | 0.0% |
-| DQN | 0.80 ± 0.14 | 8.4 ± 0.1 | 0.63 ± 0.01 | 100.0 ± 0.0% | 0.0% |
+| **Cascaded PID** | Proportional–integral–derivative, nested loops | Position PID → desired thrust vector (tilt limited) → tilt-prioritised attitude P → body-rate P → mixer; the standard structure of PX4 / Crazyflie firmware | measured position, velocity, attitude, gyro → 4 motor commands (or thrust + body rates in CTBR) | kp/kd/ki for xy and z, k_att, k_rate (8 gains, CEM-tuned per environment) | Crazyflie firmware `controller_pid`; PX4 multicopter control architecture; Brescianini & D'Andrea 2018 (tilt-prioritised attitude) |
+| **LQR** | Linear–quadratic regulator | Hover linearisation (12-state small-angle model in the heading frame, nominal mass/inertia), ZOH-discretised at 50 Hz, discrete Riccati solution; position error clipped (anti-saturation) | same 12-D state → collective thrust + 3 torques → mixer → motors | Bryson's-rule maxima for Q/R (10 values) + error clip, CEM-tuned | Kalman 1960; Bryson & Ho 1975; Bouabdallah et al. 2004 (PID vs LQ on a micro quadrotor) |
+| **LQI** | LQR with integral action | LQR augmented with the integral of the position error (3 extra states), conditional integration as anti-wind-up | state + ∫position error → thrust + torques | as LQR + 2 integral maxima | standard servo/integral LQR (e.g. MATLAB `lqi`) |
+| **PPO** | Proximal Policy Optimization | On-policy actor-critic, clipped surrogate, GAE, adaptive LR on KL | observation (18-D v1 / 26-D v2) → 4 actions | 1024 envs × 32 steps, 5 epochs × 4 minibatches, clip 0.2, γ 0.99, λ 0.95, MLP 256-128-64 | Schulman et al. 2017 |
+| **TD3** | Twin Delayed DDPG | Off-policy deterministic actor, twin critics, target smoothing, delayed actor updates | same → 4 actions | 2 M replay, batch 4096, 8 updates/step, policy delay 2, τ 0.005, MLP 256-256 | Fujimoto et al. 2018 |
+| **DQN** | Deep Q-Network (Double DQN, 3-step returns) | Discrete Q-learning over 3 levels per motor (81 joint actions) | same → 1 of 81 motor-level combinations | lr 1e-4, τ 0.001, 2 updates/step, ε 1→0.05 | Mnih et al. 2015; van Hasselt et al. 2016; Hessel et al. 2018 |
+| **CTBR action space** | Collective thrust + body rates | Policy outputs total thrust and 3 body-rate set-points; an onboard 100 Hz P rate loop + mixer (shared with the PID-CTBR) turns them into motor commands | observation → [T, ω_x, ω_y, ω_z] | rate gain 20 / 20 / 10 s⁻¹, max rate 4 / 4 / 2 rad/s | Kaufmann et al. 2022 (benchmark of learned quadrotor control interfaces) |
+| **RMA teacher–student** | Rapid Motor Adaptation | Teacher = PPO-CTBR that also sees privileged e = [wind force in body frame, mass, thrust coeff., motor τ, delay]; student = frozen teacher + adaptation module estimating ê from the last 1 s (50 steps) of observations and actions, trained by on-policy regression (DAgger-style) | 50 × 26-D history → ê (7-D) → teacher → 4 CTBR actions | MLP 1300-256-128-7, 30 M steps, MSE in normalised e space | Kumar et al. 2021 (RMA); related: O'Connell et al. 2022 (Neural-Fly) |
 
-Beyond the training range (base wind fixed, same gust pulse) — success rate / crash rate:
+All controllers see the same (noisy, in v2) measurements; only the RMA teacher sees privileged information and is
+reported as an upper bound, not as a deployable controller.
 
-| Algorithm | 0.10 N (36 % weight) | 0.12 N (43 % weight) | 0.14 N (51 % weight) |
-|---|---|---|---|
-| PPO | 99.0% / 1.0% | 89.5% / 9.2% | 48.8% / 44.1% |
-| TD3 | 96.9% / 2.2% | 79.8% / 14.1% | 42.8% / 37.6% |
-| DQN | 99.6% / 0.4% | 80.5% / 13.5% | 10.4% / 56.2% |
+## Results
 
-- PPO relative to DQN: position error +41%, gust peak error -16%, recovery time -14% (negative = PPO better)
-- PPO relative to TD3: position error -39%, gust peak error -5%, recovery time -13% (negative = PPO better)
+All numbers: 512 evaluation episodes per controller, evaluation seed 1000, 12 s episodes, base wind in the training
+range with a random direction, plus one gust pulse at 6 s (0.5 s). Mean ± std over 3 seeds — training seeds for RL,
+independent tuning seeds (11, 12, 13) for PID/LQR/LQI. *Position error* = mean true distance to the target over 2–6 s;
+*gust peak* = max error after the gust; *recovery* = time from gust onset until the error stays < 5 cm for 0.5 s;
+*success* = no crash in 12 s and last-2 s error < 10 cm.
 
-**Reading the numbers**
+### v2 — realistic simulator (main result)
 
-- Inside the training wind range all three methods hover reliably (≥ 99.7 % success). DQN has the smallest steady
-  error (0.8 cm) — its 81-action bang-bang policy dithers around the target very tightly once trained.
-- PPO handles disturbances best: lowest gust peak error (7.1 cm), fastest recovery into the 5 cm band (0.54 s,
-  14 % faster than DQN, 13 % faster than TD3), and the most graceful degradation beyond the training range
-  (89.5 % success at 0.12 N vs ~80 % for TD3/DQN; 48.8 % at 0.14 N vs 10.4 % for DQN).
-- TD3 is the most conservative: zero crashes in range but the largest steady error (1.8 cm).
+Thrust-to-weight 1.9; motor lag τ ~ U[20, 50] ms; 1–2 step (20–40 ms) command delay; mass and thrust coefficient ±10 %;
+sensor noise (5 mm, 2 cm/s, 0.01 rad, 0.05 rad/s); base wind U[0, 35] % of the weight; gust +40 %.
 
-![Training curves](figures/training_curves.png)
+| Controller | Position error (cm) | Gust peak (cm) | Recovery (s) | Success | Crash |
+|---|---|---|---|---|---|
+| Cascaded PID (CTBR, onboard rate loop) | 1.66 ± 0.17 | 21.0 ± 0.4 | 1.58 ± 0.04 | 99.9 % | 0.1 % |
+| Cascaded PID (motor commands) | 1.73 ± 0.17 | 23.4 ± 0.6 | 1.94 ± 0.19 | 100.0 % | 0.0 % |
+| LQR (motor commands) | 14.72 ± 1.61 | 33.5 ± 0.5 | 1.81 ± 0.30 | 35.3 % | 0.8 % |
+| LQI (motor commands) | 2.27 ± 0.57 | 27.0 ± 0.3 | 1.76 ± 0.05 | 84.8 % | 14.4 % |
+| PPO, motor commands | 2.83 ± 0.54 | 11.6 ± 0.2 | 1.35 ± 0.06 | 99.5 % | 0.5 % |
+| PPO, CTBR | 2.15 ± 0.13 | 10.6 ± 0.3 | 1.09 ± 0.04 | 100.0 % | 0.0 % |
+| TD3, CTBR (v1 hyper-parameters) | 9.90 ± 1.40 | 19.7 ± 0.6 | 1.91 ± 0.21 ¹ | 54.4 % | 0.0 % |
+| **RMA student (CTBR, estimates wind online)** | **0.90 ± 0.05** | **9.2 ± 0.2** | **0.84 ± 0.06** | **100.0 %** | **0.0 %** |
+| RMA teacher (sees the true wind — upper bound) | 0.74 ± 0.06 | 7.7 ± 0.1 | 0.80 ± 0.03 | 100.0 % | 0.0 % |
 
-![Wind robustness sweep](figures/wind_adaptation.png)
+Success with the steady wind fixed **beyond the training range** (same +40 % gust):
 
-### Compared with the 2025 version
+| Controller | 40 % wt | 50 % wt | 60 % wt | 70 % wt | 80 % wt |
+|---|---|---|---|---|---|
+| PID-CTBR | 99.9 % | 99.9 % | 99.3 % | 82.0 % | 29.6 % |
+| **PID-motor** | **100.0 %** | **99.7 %** | **99.9 %** | **99.0 %** | **93.4 %** |
+| LQR | 0.0 % | 0.0 % | 0.0 % | 0.0 % | 0.0 % |
+| LQI | 59.8 % | 28.8 % | 10.2 % | 0.3 % | 0.0 % |
+| PPO-motor | 97.7 % | 88.5 % | 56.0 % | 9.6 % | 0.8 % |
+| PPO-CTBR | 99.8 % | 98.8 % | 83.9 % | 45.0 % | 12.0 % |
+| TD3-CTBR | 0.0 % | 0.0 % | 0.0 % | 0.0 % | 0.0 % |
+| RMA student | 100.0 % | 99.9 % | 99.7 % | 89.9 % | 54.3 % |
+| RMA teacher | 100.0 % | 100.0 % | 100.0 % | 93.9 % | 70.2 % |
 
-| | 2025 README | This re-run |
+¹ only 16.5 % of TD3 episodes get back inside 5 cm at all; the mean is over those. TD3 does not crash in range,
+but it hovers with a ~10 cm offset (success 36–70 % per seed) and already fails at a steady 30 % wind (2–10 %).
+
+(LQR "success" is 0 although it rarely crashes at 40–60 %: without integral action its steady offset exceeds the
+10 cm success threshold.) Full tables incl. crash rates: [`results_v2/summary.md`](results_v2/summary.md).
+
+![v2 wind sweep](figures/v2_wind_sweep.png)
+
+**Online wind estimation (RMA adaptation module).** RMSE of the estimated wind force, in % of the weight, over 512
+episodes and 3 students: 2.0 (steady, base wind 30 %, inside the range), 5.2 (steady, 60 %, outside the range,
+estimate biased 2.7 % low), 9–13 during the 0.5 s gust (the 1 s history window lags a step change by ~0.1–0.2 s).
+Correlation between estimated and true x/y force: 0.994.
+
+![RMA wind estimate](figures/v2_wind_estimate.png)
+
+### v1 — idealised simulator
+
+Ideal motors (no lag, no delay, no noise, no randomisation); motor speed limited to 4500–5500 RPM (0.81–1.21 × weight);
+base wind 0.02–0.08 N (7–29 % of the weight); gust +0.10 N (36 %).
+
+| Controller | Position error (cm) | Gust peak (cm) | Recovery (s) | Success | Crash |
+|---|---|---|---|---|---|
+| PPO | 1.13 ± 0.24 | **7.1 ± 0.3** | **0.54 ± 0.04** | 99.7 % | 0.3 % |
+| TD3 | 1.84 ± 0.24 | 7.5 ± 0.2 | 0.62 ± 0.04 | 100.0 % | 0.0 % |
+| DQN | **0.80 ± 0.14** | 8.4 ± 0.1 | 0.63 ± 0.01 | 100.0 % | 0.0 % |
+| Cascaded PID | 0.81 ± 0.05 | 13.2 ± 0.3 | 1.10 ± 0.02 | 99.7 % | 0.3 % |
+| LQR | 4.65 ± 0.07 | 11.6 ± 0.1 | 1.22 ± 0.01 | 94.3 % | 5.5 % |
+| LQI | 1.06 ± 0.04 | 13.7 ± 0.8 | 1.35 ± 0.23 | 96.5 % | 2.9 % |
+
+Success beyond the training range: at 0.12 N (43 % of weight) PPO 89.5 %, TD3 79.8 %, DQN 80.5 %, PID 37.2 %,
+LQR 1.8 %, LQI 12.2 %; at 0.14 N (51 %) 48.8 / 42.8 / 10.4 / 0.1 / 0.0 / 6.1 %
+([`results/summary.md`](results/summary.md)). With only 21 % thrust margin, every controller saturates the motors
+here; the RL policies, trained with random gusts at saturation, handle it best.
+
+![Classical control vs RL in v1 and v2](figures/classical_vs_rl.png)
+
+![v1 wind sweep: RL vs PID](figures/wind_adaptation.png)
+
+## Questions answered with the data
+
+**Why a cascaded PID as the baseline?** It is what flies real quadrotors: PX4 and the Crazyflie firmware both use
+cascaded position → attitude → rate PID loops, so "does RL beat the PID?" is the question a practitioner asks. It
+also turned out to be a strong baseline once tuned properly (CEM over 8 gains, 3 independent tuning seeds that agree
+within a few %): in v1 its steady error (0.81 cm) ties the best RL policy, and in v2 it is the most robust controller in
+very strong wind.
+
+**LQR / LQI vs PID — where LQR wins and loses.**
+- *Wins:* in v1 (perfect model, no delay) LQR has a lower gust peak than the PID (11.6 vs 13.2 cm): full-state feedback
+  uses velocity and attitude jointly and reacts faster to a disturbance. LQI matches the PID's steady error
+  (1.06 vs 0.81 cm) once integral action is added.
+- *Loses — constant disturbances:* plain LQR has no integrator, so steady wind and (in v2) the randomised mass/thrust
+  leave a constant offset: 4.65 cm in v1 and 14.7 cm in v2, vs 0.81 / 1.73 cm for the PID. LQI removes it
+  (1.06 / 2.27 cm).
+- *Loses — saturation:* a linear law has no notion of motor limits. Without the error clip, LQR/LQI crashed after the
+  initial offset and after gusts; even with it (and conditional integration), LQR/LQI crash 3–6 % of v1 episodes and
+  fall to 0–12 % success at 43 % wind, vs 37 % for the PID with its explicit tilt limit.
+- *Loses — model error and delay:* the LQR model omits motor lag and command delay. In v2 LQI loses most of its
+  margin (84.8 % success, 14.4 % crashes; PID 100 %), and beyond the training range it collapses (10 % at 60 % wind vs
+  99.9 % for the PID). A PID's low-gain, loop-by-loop structure tolerates the unmodelled 20–90 ms of lag much better.
+
+**RL vs PID and LQR — advantages and disadvantages.**
+- *Advantages:* RL is far better at rejecting gusts: in v2 the RMA policy's gust peak is 9.2 cm vs 21.0 cm (PID) and
+  27.0 cm (LQI), recovery 0.84 s vs 1.58 s / 1.76 s; in v1 PPO halves the PID's peak (7.1 vs 13.2 cm) and recovery
+  time (0.54 vs 1.10 s). RL learns to use the full actuator range near saturation (v1 beyond-range success
+  89.5 % vs 37.2 % at 43 % wind), and with RMA it identifies the wind online and reaches the best steady error
+  (0.90 cm vs PID 1.66 cm in v2).
+- *Disadvantages:* RL only works where it was trained: in v2 beyond 60 % wind the PID-motor keeps 93–99 % success while
+  PPO falls to 1–12 % and RMA to 54 %. RL needs a simulator, ~100 M steps per seed and careful design choices
+  (observation, action interface, randomisation, reward); TD3 with the v1 hyper-parameters failed in v2. A PID is
+  8 interpretable gains that tune in minutes and come with well-understood stability margins.
+
+### Which conclusions hold, which do not
+
+| Claim | Holds? | Evidence |
 |---|---|---|
-| Environment | three different environments, wind 0.2–0.4 N in the body frame (README said 0.5–2.0 N) | one shared Isaac Lab env, world-frame wind 0.02–0.08 N + gusts, calibrated thrust, yaw torque |
-| Evaluation | not reproducible from the repo | 3 seeds × 512 episodes, fixed seeds, script included |
-| Hover success (PPO / TD3 / DQN) | 85 % / 70 % / 45 % | 99.7 % / 100 % / 100 % |
-| "Recovery time" (PPO / TD3 / DQN) | 2.5 / 3.8 / 5.2 s — actually episode duration, capped at 3 s | 0.54 / 0.62 / 0.63 s from gust onset into a 5 cm band |
-| Position error (PPO) | "within 0.3 m under 2.0 N" | 1.1 cm steady, 7.1 cm peak during a +0.10 N gust |
+| RL rejects gusts better than PID/LQR (peak error, recovery time) | **Yes**, in v1 and v2 | v1 PPO 7.1 vs PID 13.2 cm; v2 RMA 9.2 vs PID 21.0 cm, 0.84 vs 1.58 s |
+| RL has the best steady hover precision | **Only with adaptation (v2)** | v2 RMA 0.90 cm best; plain PPO is worse than PID (2.15 vs 1.66 cm); v1 PID ≈ DQN < PPO |
+| RL is more robust to strong wind than PID | **No** (v2) / yes (v1, saturation-limited) | v2 at 80 % wind: PID-motor 93 %, RMA 54 %, PPO 12 %; v1 at 43 %: PPO 89.5 %, PID 37 % |
+| Wind-aware adaptation (RMA) improves on plain RL | **Yes** | steady −58 %, peak −13 %, recovery −23 %; 80 % wind success 54.3 % vs 12.0 % |
+| The learned estimator really estimates the wind | **Yes** | RMSE 2 % of weight in range, correlation 0.994 |
+| CTBR is a better RL action space than motor commands | **Yes** (PPO) | −24 % steady error, −19 % recovery, 45 % vs 9.6 % success at 70 % wind |
+| LQR is better than PID | **No** | better gust peak only in the idealised v1; worse offset, saturation and delay robustness |
+| TD3 is competitive | **Yes** (v1) / **No** (v2) | v1: 100 % success, peak 7.5 cm; v2: 9.9 cm offset, 54 % success, 0 % at ≥ 40 % wind |
 
-The 2025 numbers cannot be reproduced from the 2025 code and are not comparable metric-for-metric; the table is only
-meant to show what changed.
+## Environments (`hover_rl/env.py`, `hover_rl/presets.py`)
 
-### What was tuned
+Shared: Crazyflie 2.x (28.2 g, weight 0.277 N), target (0, 0, 1) m, start within ±0.2 m, random yaw, physics 100 Hz,
+control 50 Hz, 10 s training episodes, termination below 0.2 m / above 1.5 m / beyond ±1 m. Wind is a horizontal force in
+the world frame with gusty variation (±20 % every second) and Poisson gust pulses during training.
 
-Everything below applies to all three algorithms unless noted (same environment, same budget, same protocol):
+| | v1 (idealised) | v2 (realistic) |
+|---|---|---|
+| Actuation | motor RPM 4500–5500 (0.81–1.21 × weight), instantaneous | thrust-to-weight 1.9 (Crazyflie 2.1), first-order motor lag τ ~ U[20, 50] ms |
+| Delay | none | 1–2 control steps (20–40 ms) |
+| Randomisation | none | mass/inertia ×U[0.9, 1.1], thrust coefficient ×U[0.9, 1.1] |
+| Sensor noise | none | position 5 mm, velocity 2 cm/s, attitude 0.01 rad, gyro 0.05 rad/s |
+| Observation | 18-D body-frame state | 18-D + last 2 actions (26-D) |
+| Action interfaces | 4 motor commands | 4 motor commands, or CTBR with an onboard 100 Hz rate loop |
+| Wind (training) | 0.02–0.08 N (7–29 %) + gusts 0.03–0.10 N | 0–35 % of weight + gusts 10–40 % |
+| Evaluation gust | +0.10 N (36 %) | +40 % |
+| Reward | `1 − tanh(d/0.3) + exp(−d²/0.005) − 0.05‖v‖² − 0.02‖ω‖²` | same − 0.01‖Δa‖² |
 
-1. **Physics fixes** — thrust coefficient calibrated (5000 RPM = hover), wind applied in the world frame, rotor
-   reaction torque added so yaw is controllable.
-2. **Observation** — body-frame 18-D state with the gravity direction instead of Euler angles. In single-seed pilots
-   this took PPO from 15 % to 0.2 % crashes and from 4.2 cm to 1.2 cm error once random headings were introduced.
-3. **Training distribution** — random gust pulses during training (without them a +0.15 N evaluation gust crashed
-   98 % of PPO episodes in an early pilot).
-4. **Scale** — 1024 parallel environments, 50 M steps per run (the 2025 code ran one drone at a time).
-5. **DQN** — Double DQN + 3-step returns, low update ratio, lr 1e-4, τ 0.001 (see the tuning note below); the
-   original-style settings diverged.
+The RMA teacher additionally observes the 7-D privileged vector. The v1 environment is unchanged from the 2026-11
+re-run (its RL numbers reproduce to 1e-8).
 
+## Training and tuning budget
 
-## Task and environment (`hover_rl/env.py`)
+| | v1 | v2 |
+|---|---|---|
+| PPO / TD3 / DQN | 3 seeds × 50 M steps each | PPO motor, PPO CTBR, RMA teacher, TD3 CTBR: 3 seeds × 100 M steps; RMA student: 30 M steps per teacher |
+| PID / LQR / LQI | CEM, 1024 parallel episodes per iteration (PID 20, LQR/LQI 30 iterations), tuning seeds 11–13, 8 s episodes with a gust at 4 s; never the evaluation seed | same |
 
-| Item | Setting |
-|---|---|
-| Simulator | Isaac Sim 4.5, Isaac Lab 2.1 `DirectRLEnv`, 1024 Crazyflies simulated in parallel on the GPU |
-| Robot | Crazyflie 2.x (`isaaclab_assets.CRAZYFLIE_CFG`), mass 28.2 g, weight 0.277 N |
-| Goal | hover at (0, 0, 1) m; start uniformly within ±0.2 m of the goal, level, at rest, random yaw |
-| Control rate | physics 100 Hz, policy 50 Hz (dt = 0.02 s) |
-| Episode | 10 s (500 policy steps) in training; 12 s in evaluation |
-| Termination | z < 0.2 m, z > 1.5 m, or \|x\|, \|y\| > 1.0 m |
+DQN was not re-trained in v2: 3 discrete levels per motor cannot express the wider thrust range and the CTBR set-points
+without redesigning its action set, and in v1 it already had the weakest gust rejection of the three RL algorithms.
+TD3 was re-trained once with its v1 hyper-parameters and not tuned further.
 
-**State (18-D):** position (3), target position (3), gravity direction in the body frame (3), body-frame linear
-velocity (3), body-frame angular velocity (3), body-frame position error (3). All algorithms use the same 18-D state
-and the same running observation normaliser. (The 2025 version used roll/pitch/yaw and world-frame velocities; with
-a random initial heading, the yaw wrap-around at ±π and the heading-dependent world-frame inputs raised PPO's crash
-rate from ~1 % to 15 % in a pilot run, so attitude is now encoded as the gravity direction, as in Isaac Lab's own
-quadcopter task.)
-
-**Action (4-D):** one command per motor in [-1, 1] → RPM in [4500, 5500]; thrust = k_f·ω² on each propeller.
-k_f is calibrated so that 5000 RPM on all motors exactly balances gravity, so the motors can produce 0.81–1.21× the
-drone's weight. (The original code used k_f = 1e-6, which made even the minimum RPM produce 3.4× the weight.)
-Each rotor also produces a reaction torque about the body z axis (k_m/k_f = 0.025 m, alternating spin directions),
-which the original code omitted. Without it yaw is uncontrollable: in a first run without this torque, yaw drifted
-through gyroscopic coupling and ~1.5 % of PPO episodes flipped over during the first 3 s.
-DQN needs discrete actions: each motor takes one of 3 levels {4500, 5000, 5500} RPM → 3⁴ = 81 joint actions.
-
-**Wind (world frame, horizontal):**
-- base wind: strength ~ U[0.02, 0.08] N (7–29 % of the weight), random direction, re-drawn every episode;
-- gusty variation: every 1 s the strength is scaled by 1 + U(−0.2, 0.2) and the direction jittered by ±0.1 rad;
-- gust pulses (training only): Poisson rate 0.3 Hz, extra U[0.03, 0.10] N in a random direction for U[0.2, 0.5] s.
-
-The force is converted to the body frame before it is applied (Isaac Lab external wrenches are body-frame; the
-original code applied the "wind" in the body frame directly, so it rotated with the drone). With the thrust limit of
-1.21× weight, the largest horizontal force the drone can hold against while keeping altitude is ≈ 0.68× weight
-≈ 0.19 N, which is why the wind range is expressed in tens of millinewtons rather than the 0.5–2.0 N previously
-written in this README (2 N would be 7× the drone's weight).
-
-**Reward (shared):** `1 − tanh(d / 0.3) + exp(−d² / 0.005) − 0.05‖v‖² − 0.02‖ω‖²` per step, where d is the distance to
-the goal (max 2 per step, ≤ 1000 per 10 s episode).
-
-## Algorithms (`hover_rl/algos.py`)
-
-| | PPO | TD3 | DQN |
-|---|---|---|---|
-| Action space | continuous, Gaussian | continuous, deterministic + noise | 81 discrete motor-level combinations |
-| Networks | actor/critic MLP 256-128-64 (ELU) | actor + twin critics MLP 256-256 | Q-network MLP 256-256 |
-| Data | 1024 envs × 32-step rollouts | 1024 envs → 2 M replay buffer | 1024 envs → 2 M replay buffer |
-| Update | 5 epochs × 4 minibatches, clip 0.2, GAE λ 0.95, adaptive LR (KL target 0.01) | 8 gradient steps of batch 4096 per vector step, policy delay 2, target noise 0.2 | Double DQN + 3-step returns, 2 gradient steps of batch 4096 per vector step, Huber loss, ε 1 → 0.05 over 6 M steps |
-| γ / LR | 0.99 / 3e-4 (adaptive) | 0.99 / 3e-4, τ 0.005 | 0.99 / 1e-4, τ 0.001 |
-
-DQN tuning note: with the TD3-style update ratio (8 gradient steps per vector step), lr 3e-4, τ 0.005 and 1-step
-targets, DQN diverged (Q-loss → 10⁶ after ~8 M steps). Lowering the update ratio and adding 3-step returns made it
-learn (0.06 m error at 10 M steps) but it still collapsed at ~11 M steps (Q-loss growing from 1 to 3000). The final
-setting — additionally lr 1e-4 and a slower target network (τ 0.001) — trained stably; snapshots every 5 M steps are
-kept in `runs/dqn_s*/snapshots/` so any late collapse would be visible.
-
-Every algorithm gets the same budget: **50 M environment steps, 3 training seeds (0, 1, 2)**. The *final* policy of
-each run is evaluated (no best-checkpoint picking).
+Tuning notes for the classical controllers (so the comparison is fair): LQR/LQI first used a plain Riccati solve over
+the raw Q/R (numerically failed for wide weight ranges) → solved in Bryson-normalised coordinates; started from a
+physically reasonable Bryson guess instead of mid-range; clipped the position error (tuned) like the PID's tilt limit;
+LQI uses conditional integration. Each step removed crashes that were artefacts of the implementation, not of LQR.
 
 ## Evaluation protocol (`hover_rl/evaluate.py`)
 
-Deterministic policies, 512 parallel 12 s episodes per trained model, fixed evaluation seed 1000.
-
-- 0–6 s: base wind ~ U[0.02, 0.08] N with gusty variation (random training gusts switched off).
-- 6 s: **gust pulse** — an extra 0.10 N (36 % of the weight) in a random horizontal direction for 0.5 s.
-- **Position error**: mean ‖p − p*‖ over 2–6 s (steady wind, initial transient excluded).
-- **Recovery time**: time from gust onset until the error is < 0.05 m and stays there for 0.5 s (6 s window, no 3 s
-  cap). Episodes that never recover are reported as the *recovered* rate, not averaged in.
-  (A 0.10 m band was too loose: the best policies never leave it after the gust.)
-- **Success**: no crash / out-of-bounds during the whole 12 s **and** mean error over the last 2 s < 0.10 m.
-- **Wind sweep**: the same episode with base wind fixed to 0, 0.02, …, 0.14 N (0.10–0.14 N is beyond the training
-  range).
-
-Per-model results are averaged over the 512 episodes; the tables report mean ± std across the 3 training seeds.
+Deterministic policies; 512 parallel episodes of 12 s; evaluation seed 1000; random training gusts off; base wind
+~ U[training range] with a random direction; gust pulse at 6 s for 0.5 s in a random direction; errors use the true
+position (not the noisy measurement). The wind sweep repeats the episode with the base wind fixed (v1: 0–0.14 N;
+v2: 0–80 % of the weight). In v2 all controllers of one action interface run on the same episodes (the environment
+exposes the privileged vector; non-teacher controllers ignore it).
 
 ## Reproduce
 
 ```bash
-# 1. Isaac Sim 4.5 + Isaac Lab 2.1 in a venv (Python 3.10, ~15 GB)
+# Isaac Sim 4.5 + Isaac Lab 2.1 in a venv (Python 3.10, ~15 GB)
 python3 -m venv ~/workspace/isaaclab-env && source ~/workspace/isaaclab-env/bin/activate
 pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121
 pip install "isaacsim[all,extscache]==4.5.0" --extra-index-url https://pypi.nvidia.com
 git clone --branch v2.1.0 https://github.com/isaac-sim/IsaacLab.git && cd IsaacLab
 pip install "setuptools<70" && pip install --no-build-isolation flatdict==4.0.1 && ./isaaclab.sh --install none
 
-# 2. train 3 algorithms x 3 seeds, evaluate, write tables and figures (~3.5 h on one RTX 3080 Ti)
 cd Drone-Stable-Hover-RL
-bash hover_rl/run_all.sh
-
-# single run / evaluation / report / video
-hover_rl/run.sh hover_rl/train.py --algo ppo --seed 0 --env_steps 50000000
-hover_rl/run.sh hover_rl/evaluate.py
-python hover_rl/report.py
-hover_rl/run.sh hover_rl/record.py --model runs/ppo_s0/model.pt --algo ppo --label PPO --out media/ppo_s0_wind.mp4
+bash hover_rl/run_all.sh          # v1: PPO/TD3/DQN x 3 seeds
+bash hover_rl/tune_all_pid.sh     # PID / LQR / LQI, v1 and v2, tuning seeds 11-13
+bash hover_rl/run_v2.sh           # v2: PPO-motor, PPO-CTBR, RMA teacher x 3 seeds
+bash hover_rl/run_students.sh     # v2: RMA students (adaptation modules)
+bash hover_rl/run_td3_v2.sh       # v2: TD3-CTBR
+hover_rl/run.sh hover_rl/evaluate.py --preset v1
+hover_rl/run.sh hover_rl/evaluate.py --preset v2_ctbr_priv  --out results_v2
+hover_rl/run.sh hover_rl/evaluate.py --preset v2_motor_priv --out results_v2
+hover_rl/run.sh hover_rl/wind_estimate.py --students runs_v2/student_ctbr_s*/student.pt
+python hover_rl/report.py && python hover_rl/report_v2.py
+hover_rl/run.sh hover_rl/record.py --preset v2_ctbr_priv --algo student --model runs_v2/student_ctbr_s0/student.pt \
+    --base_n 0.5 --gust_n 0.4 --label "RMA" --out media/v2_rma_wind.mp4
 ```
 
 `hover_rl/run.sh` activates the venv, clears ROS `PYTHONPATH` entries and sets `OMNI_KIT_ACCEPT_EULA=YES` (running it
-means you accept the NVIDIA Omniverse License Agreement).
-
-Outputs: `runs/<algo>_s<seed>/{train_log.csv, config.json, model.pt}`, `results/{eval_per_model.json, summary.md,
-summary.csv}`, `figures/{training_curves.png, wind_adaptation.png}`.
+means you accept the NVIDIA Omniverse License Agreement). On a 12 GB GPU at most three Isaac Sim processes fit at once.
 
 ## Project structure
 
 ```
 Drone-Stable-Hover-RL/
-├── hover_rl/            # unified pipeline (source of all numbers in this README)
-│   ├── env.py           # Isaac Lab wind-hover environment
-│   ├── algos.py         # PPO / TD3 / DQN
-│   ├── train.py         # one algorithm, one seed
-│   ├── evaluate.py      # evaluation protocol + wind sweep
-│   ├── report.py        # tables and figures
-│   ├── record.py        # headless camera recording of a policy under scripted wind
-│   ├── run.sh           # venv wrapper
-│   └── run_all.sh       # full experiment
-├── runs/                # training logs + configs (model weights are git-ignored)
-├── results/             # evaluation JSON + summary tables
-├── figures/             # training_curves.png, wind_adaptation.png
-├── media/               # ppo_vs_dqn_wind.mp4 (+ single clips) and poster frames
-├── PPO/ TD3/ DQN/       # legacy 2025 scripts (not used for the results)
-└── visualization.py     # legacy
+├── hover_rl/
+│   ├── env.py            # Isaac Lab wind-hover environment (v1 defaults + v2 realism options)
+│   ├── presets.py        # v1 / v2_motor / v2_ctbr (+ _priv) configurations
+│   ├── algos.py          # PPO / TD3 / DQN
+│   ├── control.py        # cascaded PID, LQR/LQI, RMA student, controller loading
+│   ├── train.py          # RL training (one algorithm, one seed, one preset)
+│   ├── train_student.py  # RMA phase 2 (adaptation module)
+│   ├── tune_pid.py       # CEM tuning of PID / LQR / LQI
+│   ├── evaluate.py       # evaluation protocol + wind sweep (all controllers)
+│   ├── wind_estimate.py  # RMA estimated vs true wind
+│   ├── report.py         # v1 tables + figures
+│   ├── report_v2.py      # v2 tables + figures, classical-vs-RL figure
+│   ├── record.py         # headless camera recording under scripted wind
+│   └── run*.sh, tune_all_pid.sh
+├── baselines/            # tuned PID / LQR / LQI parameters (JSON) + tuning logs
+├── runs/, runs_v2/       # training logs + configs (weights are git-ignored)
+├── results/, results_v2/ # evaluation JSON + summary tables
+├── figures/              # all figures
+├── media/                # videos and poster frames
+└── PPO/ TD3/ DQN/        # legacy 2025 scripts (not used for any number above)
 ```
 
-## Legacy code
+## History
 
-The 2025 scripts are kept unchanged in behaviour except for three labelling fixes:
-`PPO/read_training_data_PPO.py` now labels the x-axis "Wind Force (N)" (it was "Wind Speed (m/s)"),
-`PPO/drone_PPO_record.py` documents that its "recovery time" is really the episode duration and uses the control
-time step, and `DQN/drone_DQN.py` documents its 9-D state. The old figures in `PPO/figure/` and data in `PPO/data/`
-come from that legacy setup (2000 training episodes, rewards ≈ +1600 under the old `10·exp(−10 d²)` reward) and are
-not comparable with the results above.
+- **2025** — original PPO/TD3/DQN scripts (`PPO/`, `TD3/`, `DQN/`). Each algorithm used a different environment and the
+  reported "recovery time" was the episode duration; those numbers are superseded.
+- **2026-11 re-run** — one shared Isaac Lab environment and protocol for PPO/TD3/DQN (v1 above; video
+  [`media/ppo_vs_dqn_wind.mp4`](media/ppo_vs_dqn_wind.mp4)).
+- **2026-11 controller study** (this version) — PID/LQR/LQI baselines, realistic v2 simulator, CTBR, RMA adaptation.
+
+The legacy scripts carry only labelling fixes (wind axis in N, "recovery time" documented as episode duration, DQN's
+9-D state documented); their figures and data come from the old setup and are not comparable.
+
+## References
+
+Bouabdallah, Noth, Siegwart, *PID vs LQ control techniques applied to an indoor micro quadrotor*, IROS 2004 ·
+Brescianini, D'Andrea, *Tilt-prioritized quadrocopter attitude control*, IEEE TCST 2018 ·
+Bryson, Ho, *Applied Optimal Control*, 1975 ·
+Fujimoto, van Hoof, Meger, *Addressing function approximation error in actor-critic methods* (TD3), ICML 2018 ·
+Hessel et al., *Rainbow*, AAAI 2018 ·
+Kaufmann et al., *A benchmark comparison of learned control policies for agile quadrotor flight*, ICRA 2022 ·
+Kumar, Fu, Pathak, Malik, *RMA: Rapid Motor Adaptation for legged robots*, RSS 2021 ·
+Mnih et al., *Human-level control through deep reinforcement learning*, Nature 2015 ·
+O'Connell et al., *Neural-Fly enables rapid learning for agile flight in strong winds*, Science Robotics 2022 ·
+Schulman et al., *Proximal policy optimization algorithms*, arXiv 2017 ·
+van Hasselt, Guez, Silver, *Deep reinforcement learning with double Q-learning*, AAAI 2016 ·
+Bitcraze Crazyflie firmware (`controller_pid`); PX4 Autopilot multicopter control architecture.
 
 ## Contact
 

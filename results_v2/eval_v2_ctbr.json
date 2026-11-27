@@ -1,0 +1,1324 @@
+{
+  "protocol": {
+    "preset": "v2_ctbr_priv",
+    "num_envs": 512,
+    "eval_seed": 1000,
+    "episode_s": 12.0,
+    "gust_time_s": 6.0,
+    "gust_N": 0.11065681410051625,
+    "gust_duration_s": 0.5,
+    "tol_m": 0.1,
+    "recovery_tol_m": 0.05,
+    "hold_s": 0.5,
+    "train_wind_N": [
+      0.0,
+      0.0968247123379517
+    ],
+    "robot_weight_N": 0.2766420352512906,
+    "sweep": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8
+    ],
+    "sweep_unit": 0.2766420352512906,
+    "wind_unit": "fraction of nominal weight"
+  },
+  "models": {
+    "ppo_ctbr_s0": {
+      "algo": "ppo_ctbr",
+      "kind": "ppo",
+      "main": {
+        "pos_err_m": 0.019760271534323692,
+        "recovery_s": 1.1188649706457925,
+        "recovered_rate": 0.998046875,
+        "gust_peak_err_m": 0.10918390739243478,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.012958057224750519,
+          "recovery_s": 0.9192578124999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.1064204520516796,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.015160102397203445,
+          "recovery_s": 0.937734375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10708581391372718,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.019898472353816032,
+          "recovery_s": 1.0662890625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10945039443322457,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.02646486461162567,
+          "recovery_s": 1.29984375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.11321296487585641,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.03390372171998024,
+          "recovery_s": 1.7660749506903355,
+          "recovered_rate": 0.990234375,
+          "gust_peak_err_m": 0.11972232281285174,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.00390625
+        },
+        "0.5": {
+          "pos_err_m": 0.049708832055330276,
+          "recovery_s": 2.4388607594936706,
+          "recovered_rate": 0.92578125,
+          "gust_peak_err_m": 0.1374572551864035,
+          "success_rate": 0.984375,
+          "crash_rate": 0.00390625
+        },
+        "0.6": {
+          "pos_err_m": 0.08233463764190674,
+          "recovery_s": 2.8765753424657534,
+          "recovered_rate": 0.5703125,
+          "gust_peak_err_m": 0.1856891414751922,
+          "success_rate": 0.7734375,
+          "crash_rate": 0.0078125
+        },
+        "0.7": {
+          "pos_err_m": 0.13031356036663055,
+          "recovery_s": 2.76921052631579,
+          "recovered_rate": 0.1484375,
+          "gust_peak_err_m": 0.2561928498525306,
+          "success_rate": 0.23046875,
+          "crash_rate": 0.01953125
+        },
+        "0.8": {
+          "pos_err_m": 0.18400880694389343,
+          "recovery_s": 2.2520000000000002,
+          "recovered_rate": 0.01953125,
+          "gust_peak_err_m": 0.33146837866434486,
+          "success_rate": 0.0546875,
+          "crash_rate": 0.091796875
+        }
+      }
+    },
+    "ppo_ctbr_s1": {
+      "algo": "ppo_ctbr",
+      "kind": "ppo",
+      "main": {
+        "pos_err_m": 0.022889669984579086,
+        "recovery_s": 1.1236580516898609,
+        "recovered_rate": 0.982421875,
+        "gust_peak_err_m": 0.1070384439517511,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.013788796961307526,
+          "recovery_s": 0.9149609375000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10322766684112139,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.016331113874912262,
+          "recovery_s": 0.9185546875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10238742336514406,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.023038161918520927,
+          "recovery_s": 1.0509374999999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10625519043242093,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.0325571708381176,
+          "recovery_s": 1.420281690140845,
+          "recovered_rate": 0.970703125,
+          "gust_peak_err_m": 0.11191394246270647,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.0442163348197937,
+          "recovery_s": 1.8434666666666666,
+          "recovered_rate": 0.87890625,
+          "gust_peak_err_m": 0.12247787344676908,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.060358647257089615,
+          "recovery_s": 2.13621103117506,
+          "recovered_rate": 0.814453125,
+          "gust_peak_err_m": 0.13733572536331462,
+          "success_rate": 0.98828125,
+          "crash_rate": 0.0078125
+        },
+        "0.6": {
+          "pos_err_m": 0.0845431461930275,
+          "recovery_s": 2.698448275862069,
+          "recovered_rate": 0.6796875,
+          "gust_peak_err_m": 0.15784734337332243,
+          "success_rate": 0.91796875,
+          "crash_rate": 0.021484375
+        },
+        "0.7": {
+          "pos_err_m": 0.11953159421682358,
+          "recovery_s": 3.0798130841121494,
+          "recovered_rate": 0.208984375,
+          "gust_peak_err_m": 0.19671965569130104,
+          "success_rate": 0.5703125,
+          "crash_rate": 0.087890625
+        },
+        "0.8": {
+          "pos_err_m": 0.17663022875785828,
+          "recovery_s": 2.2079999999999997,
+          "recovered_rate": 0.009765625,
+          "gust_peak_err_m": 0.24512320403487253,
+          "success_rate": 0.115234375,
+          "crash_rate": 0.23828125
+        }
+      }
+    },
+    "ppo_ctbr_s2": {
+      "algo": "ppo_ctbr",
+      "kind": "ppo",
+      "main": {
+        "pos_err_m": 0.021969880908727646,
+        "recovery_s": 1.0348828125,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.10231888324778993,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.01661502569913864,
+          "recovery_s": 0.9330468749999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10098741326510208,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.0172748900949955,
+          "recovery_s": 0.9213671875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10071964543749345,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.020532742142677307,
+          "recovery_s": 1.0516796875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10287360780057497,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.027611665427684784,
+          "recovery_s": 1.222204724409449,
+          "recovered_rate": 0.9921875,
+          "gust_peak_err_m": 0.1074598934866634,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.00390625
+        },
+        "0.4": {
+          "pos_err_m": 0.03950091451406479,
+          "recovery_s": 1.8732669322709166,
+          "recovered_rate": 0.98046875,
+          "gust_peak_err_m": 0.1128572516959824,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.5": {
+          "pos_err_m": 0.05455831065773964,
+          "recovery_s": 2.719559471365639,
+          "recovered_rate": 0.88671875,
+          "gust_peak_err_m": 0.12912097227831018,
+          "success_rate": 0.9921875,
+          "crash_rate": 0.005859375
+        },
+        "0.6": {
+          "pos_err_m": 0.07781124860048294,
+          "recovery_s": 3.1178857142857144,
+          "recovered_rate": 0.68359375,
+          "gust_peak_err_m": 0.15871519394453584,
+          "success_rate": 0.82421875,
+          "crash_rate": 0.0078125
+        },
+        "0.7": {
+          "pos_err_m": 0.10242008417844772,
+          "recovery_s": 3.339166666666667,
+          "recovered_rate": 0.28125,
+          "gust_peak_err_m": 0.1908298138244803,
+          "success_rate": 0.548828125,
+          "crash_rate": 0.02734375
+        },
+        "0.8": {
+          "pos_err_m": 0.14171509444713593,
+          "recovery_s": 3.424285714285714,
+          "recovered_rate": 0.0546875,
+          "gust_peak_err_m": 0.23612397943818292,
+          "success_rate": 0.19140625,
+          "crash_rate": 0.076171875
+        }
+      }
+    },
+    "td3_ctbr_s0": {
+      "algo": "td3_ctbr",
+      "kind": "td3",
+      "main": {
+        "pos_err_m": 0.09300009161233902,
+        "recovery_s": 1.6477551020408165,
+        "recovered_rate": 0.19140625,
+        "gust_peak_err_m": 0.1928247602772899,
+        "success_rate": 0.576171875,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.05614162236452103,
+          "recovery_s": 1.3486761710794297,
+          "recovered_rate": 0.958984375,
+          "gust_peak_err_m": 0.1746499450528063,
+          "success_rate": 0.994140625,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.0722791850566864,
+          "recovery_s": 2.2121495327102805,
+          "recovered_rate": 0.208984375,
+          "gust_peak_err_m": 0.1766447698464617,
+          "success_rate": 0.9375,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.09675802290439606,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.19631021155510098,
+          "success_rate": 0.505859375,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.12353327870368958,
+          "recovery_s": 0.16,
+          "recovered_rate": 0.001953125,
+          "gust_peak_err_m": 0.2155338430602569,
+          "success_rate": 0.0859375,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.1552344709634781,
+          "recovery_s": 0.14,
+          "recovered_rate": 0.001953125,
+          "gust_peak_err_m": 0.25395122106419876,
+          "success_rate": 0.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.2097948044538498,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.3150404910520306,
+          "success_rate": 0.0,
+          "crash_rate": 0.0078125
+        },
+        "0.6": {
+          "pos_err_m": 0.26984983682632446,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.3845972229293951,
+          "success_rate": 0.0,
+          "crash_rate": 0.0078125
+        },
+        "0.7": {
+          "pos_err_m": 0.3382355868816376,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.46172514667263814,
+          "success_rate": 0.0,
+          "crash_rate": 0.095703125
+        },
+        "0.8": {
+          "pos_err_m": 0.40556246042251587,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.5497184313576797,
+          "success_rate": 0.0,
+          "crash_rate": 0.3203125
+        }
+      }
+    },
+    "td3_ctbr_s1": {
+      "algo": "td3_ctbr",
+      "kind": "td3",
+      "main": {
+        "pos_err_m": 0.08556993305683136,
+        "recovery_s": 2.1487128712871293,
+        "recovered_rate": 0.197265625,
+        "gust_peak_err_m": 0.1923611488455208,
+        "success_rate": 0.69921875,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.0512220673263073,
+          "recovery_s": 1.7285393258426967,
+          "recovered_rate": 0.869140625,
+          "gust_peak_err_m": 0.1777170571294846,
+          "success_rate": 0.990234375,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.06401665508747101,
+          "recovery_s": 2.823174603174603,
+          "recovered_rate": 0.24609375,
+          "gust_peak_err_m": 0.18054123190813698,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.08914513885974884,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.1954924021847546,
+          "success_rate": 0.859375,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.11487074196338654,
+          "recovery_s": 0.19999999999999998,
+          "recovered_rate": 0.005859375,
+          "gust_peak_err_m": 0.2117461222806014,
+          "success_rate": 0.099609375,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.1459370106458664,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.2459486742775501,
+          "success_rate": 0.0,
+          "crash_rate": 0.001953125
+        },
+        "0.5": {
+          "pos_err_m": 0.19126927852630615,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.2989948847405831,
+          "success_rate": 0.0,
+          "crash_rate": 0.001953125
+        },
+        "0.6": {
+          "pos_err_m": 0.23144717514514923,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.35568703925163725,
+          "success_rate": 0.0,
+          "crash_rate": 0.0078125
+        },
+        "0.7": {
+          "pos_err_m": 0.2911471128463745,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.42937161282212555,
+          "success_rate": 0.0,
+          "crash_rate": 0.025390625
+        },
+        "0.8": {
+          "pos_err_m": 0.3522700369358063,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.5027630659063572,
+          "success_rate": 0.0,
+          "crash_rate": 0.087890625
+        }
+      }
+    },
+    "teacher_ctbr_s0": {
+      "algo": "teacher_ctbr",
+      "kind": "ppo",
+      "main": {
+        "pos_err_m": 0.008244370110332966,
+        "recovery_s": 0.8446875,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07835761570458999,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.006521443836390972,
+          "recovery_s": 0.8805859375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07658089957112679,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.006976167671382427,
+          "recovery_s": 0.8506640624999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07664669825317105,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.008047543466091156,
+          "recovery_s": 0.809453125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07809762146644061,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.009584153071045876,
+          "recovery_s": 0.8087890625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08063724175735842,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.013695775531232357,
+          "recovery_s": 0.832890625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08589654890965903,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.023525206372141838,
+          "recovery_s": 0.9292578125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09462066899141064,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.04083063825964928,
+          "recovery_s": 1.3281113320079523,
+          "recovered_rate": 0.982421875,
+          "gust_peak_err_m": 0.10970429560256889,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.7": {
+          "pos_err_m": 0.06662382185459137,
+          "recovery_s": 1.905181347150259,
+          "recovered_rate": 0.75390625,
+          "gust_peak_err_m": 0.13510388185386546,
+          "success_rate": 0.892578125,
+          "crash_rate": 0.0
+        },
+        "0.8": {
+          "pos_err_m": 0.0920550525188446,
+          "recovery_s": 1.7102469135802474,
+          "recovered_rate": 0.31640625,
+          "gust_peak_err_m": 0.16540148408696204,
+          "success_rate": 0.533203125,
+          "crash_rate": 0.013671875
+        }
+      }
+    },
+    "teacher_ctbr_s1": {
+      "algo": "teacher_ctbr",
+      "kind": "ppo",
+      "main": {
+        "pos_err_m": 0.0069359056651592255,
+        "recovery_s": 0.7800390625,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07673707852518419,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.0056550283916294575,
+          "recovery_s": 0.7955468750000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07586508170788875,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.0057814111933112144,
+          "recovery_s": 0.7871484375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07587639111443423,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.006720820441842079,
+          "recovery_s": 0.74390625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07520443142129807,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.008295554667711258,
+          "recovery_s": 0.7293750000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07549936659052037,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.011976237408816814,
+          "recovery_s": 0.713359375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07743706380279036,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.01864231377840042,
+          "recovery_s": 0.7546875000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08522826159605756,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.02809537574648857,
+          "recovery_s": 0.9640234375000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09098984070442384,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.7": {
+          "pos_err_m": 0.041883684694767,
+          "recovery_s": 1.2830103092783505,
+          "recovered_rate": 0.947265625,
+          "gust_peak_err_m": 0.1045624448088347,
+          "success_rate": 0.970703125,
+          "crash_rate": 0.0
+        },
+        "0.8": {
+          "pos_err_m": 0.06132489815354347,
+          "recovery_s": 1.4690909090909092,
+          "recovered_rate": 0.751953125,
+          "gust_peak_err_m": 0.13505560538838268,
+          "success_rate": 0.83203125,
+          "crash_rate": 0.01171875
+        }
+      }
+    },
+    "teacher_ctbr_s2": {
+      "algo": "teacher_ctbr",
+      "kind": "ppo",
+      "main": {
+        "pos_err_m": 0.007168327923864126,
+        "recovery_s": 0.7823828125000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.07631103969470132,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.0058527132496237755,
+          "recovery_s": 0.80796875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07552229187422199,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.006250419653952122,
+          "recovery_s": 0.78265625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07560466239374364,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.007132601924240589,
+          "recovery_s": 0.7462500000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07617240706895245,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.008123107254505157,
+          "recovery_s": 0.7321484375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07691326010535704,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.012522740289568901,
+          "recovery_s": 0.74671875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.07949639263097197,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.024205263704061508,
+          "recovery_s": 0.7840624999999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08695075951254694,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.042303550988435745,
+          "recovery_s": 1.1371203155818541,
+          "recovered_rate": 0.990234375,
+          "gust_peak_err_m": 0.09843212443229277,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.7": {
+          "pos_err_m": 0.06629801541566849,
+          "recovery_s": 1.6052534562211982,
+          "recovered_rate": 0.84765625,
+          "gust_peak_err_m": 0.11753545710234903,
+          "success_rate": 0.955078125,
+          "crash_rate": 0.0
+        },
+        "0.8": {
+          "pos_err_m": 0.08744069933891296,
+          "recovery_s": 2.1387772925764192,
+          "recovered_rate": 0.447265625,
+          "gust_peak_err_m": 0.14508582316707858,
+          "success_rate": 0.7421875,
+          "crash_rate": 0.013671875
+        }
+      }
+    },
+    "student_ctbr_s0": {
+      "algo": "student_ctbr",
+      "kind": "student",
+      "main": {
+        "pos_err_m": 0.0096519086509943,
+        "recovery_s": 0.9269531249999999,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.09555930123315193,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.007018066011369228,
+          "recovery_s": 0.9346093750000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09326018144929549,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.007899166084825993,
+          "recovery_s": 0.92890625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09416036077891476,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.00949764996767044,
+          "recovery_s": 0.8990625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09502553105994593,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.01162530854344368,
+          "recovery_s": 0.9308984375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09681834273942513,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.018002329394221306,
+          "recovery_s": 1.0050000000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.1001337908237474,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.033566106110811234,
+          "recovery_s": 1.392641878669276,
+          "recovered_rate": 0.998046875,
+          "gust_peak_err_m": 0.10982200763828587,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.05818156898021698,
+          "recovery_s": 2.0693064876957497,
+          "recovered_rate": 0.873046875,
+          "gust_peak_err_m": 0.12435594758058947,
+          "success_rate": 0.9921875,
+          "crash_rate": 0.001953125
+        },
+        "0.7": {
+          "pos_err_m": 0.08379761874675751,
+          "recovery_s": 2.5084146341463414,
+          "recovered_rate": 0.3203125,
+          "gust_peak_err_m": 0.15248428853486368,
+          "success_rate": 0.828125,
+          "crash_rate": 0.01171875
+        },
+        "0.8": {
+          "pos_err_m": 0.11425715684890747,
+          "recovery_s": 0.47400000000000003,
+          "recovered_rate": 0.01953125,
+          "gust_peak_err_m": 0.179503475346404,
+          "success_rate": 0.328125,
+          "crash_rate": 0.046875
+        }
+      }
+    },
+    "student_ctbr_s1": {
+      "algo": "student_ctbr",
+      "kind": "student",
+      "main": {
+        "pos_err_m": 0.008642302826046944,
+        "recovery_s": 0.7953515625,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.09000794932217104,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.006711872294545174,
+          "recovery_s": 0.7725,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08924659684998915,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.007181480526924133,
+          "recovery_s": 0.78921875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08877149196632672,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.008437356911599636,
+          "recovery_s": 0.75921875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08871932285546791,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.010326718911528587,
+          "recovery_s": 0.8209765625000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.08962707079626853,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.015457181259989738,
+          "recovery_s": 0.8494921875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09212616806325968,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.025479158386588097,
+          "recovery_s": 1.067109375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09868282664683647,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.03959083929657936,
+          "recovery_s": 1.614342629482072,
+          "recovered_rate": 0.98046875,
+          "gust_peak_err_m": 0.10749004151875852,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.7": {
+          "pos_err_m": 0.06153092160820961,
+          "recovery_s": 2.421076487252125,
+          "recovered_rate": 0.689453125,
+          "gust_peak_err_m": 0.12879507833226458,
+          "success_rate": 0.904296875,
+          "crash_rate": 0.0078125
+        },
+        "0.8": {
+          "pos_err_m": 0.09448781609535217,
+          "recovery_s": 2.0283076923076924,
+          "recovered_rate": 0.126953125,
+          "gust_peak_err_m": 0.16353020768210955,
+          "success_rate": 0.4765625,
+          "crash_rate": 0.076171875
+        }
+      }
+    },
+    "student_ctbr_s2": {
+      "algo": "student_ctbr",
+      "kind": "student",
+      "main": {
+        "pos_err_m": 0.008669870905578136,
+        "recovery_s": 0.8126562500000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.09154604298964841,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.006208592560142279,
+          "recovery_s": 0.799921875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09153220859298017,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.006941339001059532,
+          "recovery_s": 0.7885546875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09094158374500694,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.008754538372159004,
+          "recovery_s": 0.78296875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09038154360314365,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.010618693195283413,
+          "recovery_s": 0.8337890625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09141100956185255,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.016751674935221672,
+          "recovery_s": 0.8994921874999999,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.09453381007915596,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.031575024127960205,
+          "recovery_s": 1.1003125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.10411189724254655,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.050689563155174255,
+          "recovery_s": 1.604689378757515,
+          "recovered_rate": 0.974609375,
+          "gust_peak_err_m": 0.11461332425096771,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.7": {
+          "pos_err_m": 0.07122478634119034,
+          "recovery_s": 2.3132967032967033,
+          "recovered_rate": 0.7109375,
+          "gust_peak_err_m": 0.12797472851255196,
+          "success_rate": 0.96484375,
+          "crash_rate": 0.01171875
+        },
+        "0.8": {
+          "pos_err_m": 0.0965302437543869,
+          "recovery_s": 2.8144144144144145,
+          "recovered_rate": 0.216796875,
+          "gust_peak_err_m": 0.14080629448910228,
+          "success_rate": 0.82421875,
+          "crash_rate": 0.046875
+        }
+      }
+    },
+    "pid_ctbr_s11": {
+      "algo": "pid_ctbr",
+      "kind": "pid",
+      "main": {
+        "pos_err_m": 0.015052681788802147,
+        "recovery_s": 1.6297656249999999,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.21497637990978546,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.009600426070392132,
+          "recovery_s": 1.6013281249999998,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.21376683562994003,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.011289149522781372,
+          "recovery_s": 1.5943359375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.2141750964219682,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.015133993700146675,
+          "recovery_s": 1.6165625000000001,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.2149402617069427,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.019274724647402763,
+          "recovery_s": 1.6640234375,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.21754871724988334,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.024098698049783707,
+          "recovery_s": 1.7218786692759296,
+          "recovered_rate": 0.998046875,
+          "gust_peak_err_m": 0.22283679895917885,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.030238209292292595,
+          "recovery_s": 1.9122134387351777,
+          "recovered_rate": 0.98828125,
+          "gust_peak_err_m": 0.24054488222463988,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.03757370635867119,
+          "recovery_s": 2.1017460317460315,
+          "recovered_rate": 0.984375,
+          "gust_peak_err_m": 0.26302344737684025,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.00390625
+        },
+        "0.7": {
+          "pos_err_m": 0.059537529945373535,
+          "recovery_s": 2.399307159353349,
+          "recovered_rate": 0.845703125,
+          "gust_peak_err_m": 0.31261236763212885,
+          "success_rate": 0.861328125,
+          "crash_rate": 0.123046875
+        },
+        "0.8": {
+          "pos_err_m": 0.13061459362506866,
+          "recovery_s": 2.7752747252747256,
+          "recovered_rate": 0.35546875,
+          "gust_peak_err_m": 0.40516278211256906,
+          "success_rate": 0.333984375,
+          "crash_rate": 0.587890625
+        }
+      }
+    },
+    "pid_ctbr_s12": {
+      "algo": "pid_ctbr",
+      "kind": "pid",
+      "main": {
+        "pos_err_m": 0.0189618319272995,
+        "recovery_s": 1.5289194499017682,
+        "recovered_rate": 0.994140625,
+        "gust_peak_err_m": 0.20630596718092953,
+        "success_rate": 0.99609375,
+        "crash_rate": 0.001953125
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.015643782913684845,
+          "recovery_s": 1.4432800000000001,
+          "recovered_rate": 0.9765625,
+          "gust_peak_err_m": 0.20361512223137854,
+          "success_rate": 0.984375,
+          "crash_rate": 0.005859375
+        },
+        "0.1": {
+          "pos_err_m": 0.015779536217451096,
+          "recovery_s": 1.4647731755424063,
+          "recovered_rate": 0.990234375,
+          "gust_peak_err_m": 0.20480608826619573,
+          "success_rate": 0.9921875,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.019032545387744904,
+          "recovery_s": 1.506496062992126,
+          "recovered_rate": 0.9921875,
+          "gust_peak_err_m": 0.2050708082090852,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.3": {
+          "pos_err_m": 0.02116290293633938,
+          "recovery_s": 1.5431434184675836,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.20680385723039363,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.4": {
+          "pos_err_m": 0.026031991466879845,
+          "recovery_s": 1.61049115913556,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.2123782725425149,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.001953125
+        },
+        "0.5": {
+          "pos_err_m": 0.032009564340114594,
+          "recovery_s": 1.769724409448819,
+          "recovered_rate": 0.9921875,
+          "gust_peak_err_m": 0.2322323127502098,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.001953125
+        },
+        "0.6": {
+          "pos_err_m": 0.044431593269109726,
+          "recovery_s": 1.961471172962227,
+          "recovered_rate": 0.982421875,
+          "gust_peak_err_m": 0.26224900993722433,
+          "success_rate": 0.98828125,
+          "crash_rate": 0.009765625
+        },
+        "0.7": {
+          "pos_err_m": 0.07398417592048645,
+          "recovery_s": 2.362061855670103,
+          "recovered_rate": 0.7578125,
+          "gust_peak_err_m": 0.3116184846848176,
+          "success_rate": 0.771484375,
+          "crash_rate": 0.205078125
+        },
+        "0.8": {
+          "pos_err_m": 0.13952584564685822,
+          "recovery_s": 2.521,
+          "recovered_rate": 0.2734375,
+          "gust_peak_err_m": 0.3988357961177826,
+          "success_rate": 0.2578125,
+          "crash_rate": 0.677734375
+        }
+      }
+    },
+    "pid_ctbr_s13": {
+      "algo": "pid_ctbr",
+      "kind": "pid",
+      "main": {
+        "pos_err_m": 0.015932884067296982,
+        "recovery_s": 1.5823828125000001,
+        "recovered_rate": 1.0,
+        "gust_peak_err_m": 0.20864570670528337,
+        "success_rate": 1.0,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.010796861723065376,
+          "recovery_s": 1.540546875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.2083687040139921,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.011915664188563824,
+          "recovery_s": 1.5438671875,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.2078113229072187,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.015588991343975067,
+          "recovery_s": 1.5856640625,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.20938789608771913,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.020080596208572388,
+          "recovery_s": 1.6105078125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.21300125433481298,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.023127246648073196,
+          "recovery_s": 1.653203125,
+          "recovered_rate": 1.0,
+          "gust_peak_err_m": 0.2161752206448,
+          "success_rate": 1.0,
+          "crash_rate": 0.0
+        },
+        "0.5": {
+          "pos_err_m": 0.028871595859527588,
+          "recovery_s": 1.7967524752475246,
+          "recovered_rate": 0.986328125,
+          "gust_peak_err_m": 0.23645177349681035,
+          "success_rate": 0.998046875,
+          "crash_rate": 0.0
+        },
+        "0.6": {
+          "pos_err_m": 0.03718598186969757,
+          "recovery_s": 1.9666011787819253,
+          "recovered_rate": 0.994140625,
+          "gust_peak_err_m": 0.25626013316944535,
+          "success_rate": 0.99609375,
+          "crash_rate": 0.00390625
+        },
+        "0.7": {
+          "pos_err_m": 0.0619368851184845,
+          "recovery_s": 2.3753271028037384,
+          "recovered_rate": 0.8359375,
+          "gust_peak_err_m": 0.3083438412233545,
+          "success_rate": 0.828125,
+          "crash_rate": 0.138671875
+        },
+        "0.8": {
+          "pos_err_m": 0.12444737553596497,
+          "recovery_s": 2.718791946308725,
+          "recovered_rate": 0.291015625,
+          "gust_peak_err_m": 0.3960456442453958,
+          "success_rate": 0.294921875,
+          "crash_rate": 0.662109375
+        }
+      }
+    },
+    "td3_ctbr_s2": {
+      "algo": "td3_ctbr",
+      "kind": "td3",
+      "main": {
+        "pos_err_m": 0.11829905956983566,
+        "recovery_s": 1.9351851851851851,
+        "recovered_rate": 0.10546875,
+        "gust_peak_err_m": 0.20520328744896688,
+        "success_rate": 0.35546875,
+        "crash_rate": 0.0
+      },
+      "sweep": {
+        "0.0": {
+          "pos_err_m": 0.09866157174110413,
+          "recovery_s": 1.2920000000000003,
+          "recovered_rate": 0.0390625,
+          "gust_peak_err_m": 0.19066904546343721,
+          "success_rate": 0.61328125,
+          "crash_rate": 0.0
+        },
+        "0.1": {
+          "pos_err_m": 0.11086404323577881,
+          "recovery_s": 1.9803636363636365,
+          "recovered_rate": 0.21484375,
+          "gust_peak_err_m": 0.20992942291195504,
+          "success_rate": 0.33984375,
+          "crash_rate": 0.0
+        },
+        "0.2": {
+          "pos_err_m": 0.11085140705108643,
+          "recovery_s": 2.217872340425532,
+          "recovered_rate": 0.091796875,
+          "gust_peak_err_m": 0.2048760589241283,
+          "success_rate": 0.744140625,
+          "crash_rate": 0.0
+        },
+        "0.3": {
+          "pos_err_m": 0.13782721757888794,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.21944360266206786,
+          "success_rate": 0.021484375,
+          "crash_rate": 0.0
+        },
+        "0.4": {
+          "pos_err_m": 0.17163482308387756,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.2624850380735621,
+          "success_rate": 0.0,
+          "crash_rate": 0.001953125
+        },
+        "0.5": {
+          "pos_err_m": 0.22608526051044464,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.3230424460534956,
+          "success_rate": 0.0,
+          "crash_rate": 0.00390625
+        },
+        "0.6": {
+          "pos_err_m": 0.29509857296943665,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.4092152714729309,
+          "success_rate": 0.0,
+          "crash_rate": 0.0078125
+        },
+        "0.7": {
+          "pos_err_m": 0.3769391179084778,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.48986706719165896,
+          "success_rate": 0.0,
+          "crash_rate": 0.0390625
+        },
+        "0.8": {
+          "pos_err_m": 0.4497341513633728,
+          "recovery_s": NaN,
+          "recovered_rate": 0.0,
+          "gust_peak_err_m": 0.5578861220677693,
+          "success_rate": 0.0,
+          "crash_rate": 0.12109375
+        }
+      }
+    }
+  }
+}

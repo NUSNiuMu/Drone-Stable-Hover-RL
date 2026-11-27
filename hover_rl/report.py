@@ -21,11 +21,13 @@ p.add_argument("--results", default=os.path.join(ROOT, "results"))
 p.add_argument("--fig", default=os.path.join(ROOT, "figures"))
 args = p.parse_args()
 
-ORDER = ["ppo", "td3", "dqn"]
-LABEL = {"ppo": "PPO", "td3": "TD3", "dqn": "DQN"}
-COLOR = {"ppo": "#2a78d6", "td3": "#eb6834", "dqn": "#1baf7a"}  # validated categorical slots 1-3
-MARK = {"ppo": "o", "td3": "s", "dqn": "^"}
-LS = {"ppo": "-", "td3": "--", "dqn": "-."}
+ORDER = ["ppo", "td3", "dqn", "pid", "lqr", "lqi"]
+LABEL = {"ppo": "PPO", "td3": "TD3", "dqn": "DQN", "pid": "Cascaded PID", "lqr": "LQR", "lqi": "LQI (LQR + integral)"}
+MAIN_PLOT = ["ppo", "td3", "dqn", "pid"]  # LQR/LQI are compared with PPO and PID in figures/classical_vs_rl.png
+# validated categorical slots 1-3; the classical baseline is drawn in neutral ink (not a 4th hue)
+COLOR = {"ppo": "#2a78d6", "td3": "#eb6834", "dqn": "#1baf7a", "pid": "#52514e", "lqr": "#52514e", "lqi": "#52514e"}
+MARK = {"ppo": "o", "td3": "s", "dqn": "^", "pid": "D", "lqr": "s", "lqi": "v"}
+LS = {"ppo": "-", "td3": "--", "dqn": "-.", "pid": ":", "lqr": "--", "lqi": "-."}
 INK, INK2, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 
 plt.rcParams.update({"font.size": 10, "axes.edgecolor": INK2, "axes.labelcolor": INK, "xtick.color": INK2,
@@ -108,7 +110,7 @@ def write_tables(table, ev):
         f"(drone weight {prot['robot_weight_N']:.3f} N), gust pulse +{prot['gust_N']:.2f} N for {prot['gust_duration_s']:.1f} s at "
         f"{prot['gust_time_s']:.0f} s. Recovery band {100 * prot.get('recovery_tol_m', prot['tol_m']):.0f} cm held "
         f"{prot['hold_s']:.1f} s; success = no crash and last-2 s error < {100 * prot['tol_m']:.0f} cm. "
-        "Mean ± std across 3 training seeds.",
+        "Mean ± std across 3 training seeds (classical controllers: 3 independently tuned parameter sets, tuning seeds 11-13).",
         "",
         "| Algorithm | Position error (cm) | Gust peak error (cm) | Recovery time (s) | Success rate | Crash rate |",
         "|---|---|---|---|---|---|",
@@ -138,7 +140,7 @@ def write_tables(table, ev):
     if "ppo" in table:
         pr = table["ppo"]["main"]
         lines.append("")
-        for other in ("dqn", "td3"):
+        for other in ("dqn", "td3", "pid", "lqr", "lqi"):
             if other in table:
                 o = table[other]["main"]
                 f = lambda k: 100 * (pr[k][0] / o[k][0] - 1)  # noqa: E731
@@ -160,7 +162,7 @@ def wind_plot(table, ev):
              ("gust_peak_err_m", "Peak error after +0.10 N gust (cm)", 100.0),
              ("success_rate", "Success rate (%)", 100.0))
     for ax, (k, ylab, sc) in zip(axes, specs):
-        for algo, t in table.items():
+        for algo, t in ((a, table[a]) for a in MAIN_PLOT if a in table):
             xs = sorted(t["sweep"], key=float)
             x = np.array([float(s) for s in xs])
             m = np.array([t["sweep"][s][k][0] for s in xs]) * sc

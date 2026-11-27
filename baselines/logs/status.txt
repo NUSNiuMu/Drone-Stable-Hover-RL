@@ -1,0 +1,21 @@
+v1 s11 exit=0
+v1 s12 exit=0
+v1 s13 exit=0
+v2_ctbr s11 exit=0
+v2_ctbr s12 exit=0
+v2_ctbr s13 exit=0
+pid v2_motor s11 ok
+pid v2_motor s12 ok
+pid v2_motor s13 ok
+lqr v1 s11 ok
+lqr v2_motor s11 ok
+lqr v1 s12 ok
+lqr v2_motor s12 ok
+lqr v1 s13 ok
+lqr v2_motor s13 ok
+lqi v1 s11 ok
+lqi v1 s12 ok
+lqi v1 s13 ok
+lqi v2_motor s11 ok
+lqi v2_motor s12 ok
+lqi v2_motor s13 ok
